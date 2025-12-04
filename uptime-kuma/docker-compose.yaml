@@ -1,0 +1,34 @@
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma
+    container_name: uptime-kuma
+    restart: unless-stopped
+    ports:
+      - 3001:3001
+    volumes:
+      - ${HOME}/uptime-kuma/data:/app/data
+    environment:
+      TZ: Europe/Madrid
+      UMASK: 0022
+    networks:
+      - kuma_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001"]
+      interval: 30s
+      retries: 3
+      start_period: 10s
+      timeout: 5s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      - homepage.group=Observability
+      - homepage.name=Uptime Kuma
+      - homepage.icon=uptime-kuma.png
+      - homepage.href=http://${TAILSCALE_MACHINE}.${TAILSCALE_TAILNET}:3001
+
+networks:
+  kuma_network:
+    driver: bridge

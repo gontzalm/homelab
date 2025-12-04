@@ -1,0 +1,10 @@
+[Unit]
+Description=Homepage service
+
+[Service]
+WorkingDirectory=%h/homepage
+ExecStart=/bin/bash -c "docker compose up"
+ExecStop=/bin/bash -c "docker compose down"
+
+[Install]
+WantedBy=default.target
