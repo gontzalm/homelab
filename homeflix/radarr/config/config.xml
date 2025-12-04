@@ -1,0 +1,18 @@
+<Config>
+  <BindAddress>*</BindAddress>
+  <Port>7878</Port>
+  <SslPort>9898</SslPort>
+  <EnableSsl>False</EnableSsl>
+  <LaunchBrowser>True</LaunchBrowser>
+  <ApiKey>b28ff4dfd5b64fe9855c27a47cbf7aaf</ApiKey>
+  <AuthenticationMethod>External</AuthenticationMethod>
+  <Branch>master</Branch>
+  <LogLevel>info</LogLevel>
+  <SslCertPath></SslCertPath>
+  <SslCertPassword></SslCertPassword>
+  <UrlBase></UrlBase>
+  <InstanceName>Radarr (Movies)</InstanceName>
+  <UpdateMechanism>Docker</UpdateMechanism>
+  <AuthenticationRequired>DisabledForLocalAddresses</AuthenticationRequired>
+  <Theme>dark</Theme>
+</Config>

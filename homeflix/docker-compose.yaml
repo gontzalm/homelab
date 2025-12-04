@@ -1,0 +1,198 @@
+services:
+  radarr:
+    image: linuxserver/radarr
+    container_name: radarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Madrid
+    volumes:
+      - ${HOME}/homeflix/radarr/config:/config
+      - media:/data/media
+      - torrents:/data/torrents
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+    labels:
+      - homepage.group=Media
+      - homepage.name=Radarr
+      - homepage.icon=radarr.png
+      - homepage.href=http://${TAILSCALE_MACHINE}.${TAILSCALE_TAILNET}:7878
+      - homepage.description=Movie management
+
+  sonarr-series:
+    image: linuxserver/sonarr
+    container_name: sonarr-series
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Madrid
+    volumes:
+      - ${HOME}/homeflix/sonarr-series/config:/config
+      - media:/data/media
+      - torrents:/data/torrents
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+    labels:
+      - homepage.group=Media
+      - homepage.name=Sonarr - Series
+      - homepage.icon=sonarr.png
+      - homepage.href=http://${TAILSCALE_MACHINE}.${TAILSCALE_TAILNET}:8989
+      - homepage.description=Series manager
+
+  sonarr-anime:
+    image: linuxserver/sonarr
+    container_name: sonarr-anime
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Madrid
+    volumes:
+      - ${HOME}/homeflix/sonarr-anime/config:/config
+      - media:/data/media
+      - torrents:/data/torrents
+    ports:
+      - 8990:8989
+    restart: unless-stopped
+    labels:
+      - homepage.group=Media
+      - homepage.name=Sonarr - Anime
+      - homepage.icon=sonarr.png
+      - homepage.href=http://${TAILSCALE_MACHINE}.${TAILSCALE_TAILNET}:8990
+      - homepage.description=Anime manager
+
+  recyclarr:
+    image: recyclarr/recyclarr
+    container_name: recyclarr
+    environment:
+      - TZ=Europe/Madrid
+    volumes:
+      - ${HOME}/homeflix/recyclarr/config:/config
+
+  prowlarr:
+    image: linuxserver/prowlarr
+    container_name: prowlarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Madrid
+    volumes:
+      - ${HOME}/homeflix/prowlarr/config:/config
+    ports:
+      - 9696:9696
+    restart: unless-stopped
+    labels:
+      - homepage.group=Media
+      - homepage.name=Prowlarr
+      - homepage.icon=prowlarr.png
+      - homepage.href=http://${TAILSCALE_MACHINE}.${TAILSCALE_TAILNET}:9696
+      - homepage.description=Indexer manager
+
+  qbittorrent:
+    image: linuxserver/qbittorrent
+    container_name: qbittorrent
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Madrid
+      - WEBUI_PORT=8080
+    volumes:
+      - ${HOME}/homeflix/qbittorrent/config:/config
+      - torrents:/data/torrents
+    ports:
+      - 8080:8080
+      - 6881:6881
+      - 6881:6881/udp
+    restart: unless-stopped
+    labels:
+      - homepage.group=Media
+      - homepage.name=qBittorrent
+      - homepage.icon=qbittorrent.png
+      - homepage.href=http://${TAILSCALE_MACHINE}.${TAILSCALE_TAILNET}:8080
+      - homepage.description=BitTorrent client
+
+  bazarr:
+    image: linuxserver/bazarr
+    container_name: bazarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Madrid
+    volumes:
+      - ${HOME}/homeflix/bazarr/config:/config
+      - media:/data/media
+    ports:
+      - 6767:6767
+    restart: unless-stopped
+    labels:
+      - homepage.group=Media
+      - homepage.name=Bazarr - Series
+      - homepage.icon=bazarr.png
+      - homepage.href=http://${TAILSCALE_MACHINE}.${TAILSCALE_TAILNET}:6767
+      - homepage.description=Subtitles manager
+
+  bazarr-anime:
+    image: linuxserver/bazarr
+    container_name: bazarr-anime
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Madrid
+    volumes:
+      - ${HOME}/homeflix/bazarr-anime/config:/config
+      - media:/data/media
+    ports:
+      - 6768:6767
+    restart: unless-stopped
+    labels:
+      - homepage.group=Media
+      - homepage.name=Bazarr - Anime
+      - homepage.icon=bazarr.png
+      - homepage.href=http://${TAILSCALE_MACHINE}.${TAILSCALE_TAILNET}:6768
+      - homepage.description=Subtitles manager
+
+  jellyfin:
+    image: jellyfin/jellyfin
+    container_name: jellyfin
+    volumes:
+      - ${HOME}/homeflix/jellyfin/cache:/cache
+      - ${HOME}/homeflix/jellyfin/config:/config
+      - media:/data/media
+    ports:
+      - 8096:8096
+      - 8092:8092
+      - 7359:7359/udp
+      - 1900:1900/udp
+    restart: unless-stopped
+    labels:
+      - homepage.group=Media
+      - homepage.name=Jellyfin
+      - homepage.icon=jellyfin.png
+      - homepage.href=http://${TAILSCALE_MACHINE}.${TAILSCALE_TAILNET}:8096
+      - homepage.description=Media system
+
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      TZ: Europe/Madrid
+      WATCHTOWER_CLEANUP: true
+      WATCHTOWER_SCHEDULE: 0 0 4 ? * sun
+
+volumes:
+  media:
+    driver: local
+    driver_opts:
+      type: ext4
+      device: /mnt/hdd/data/media
+      o: bind
+
+  torrents:
+    driver: local
+    driver_opts:
+      type: ext4
+      device: /mnt/hdd/data/torrents
+      o: bind

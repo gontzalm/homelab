@@ -1,0 +1,8 @@
+#!/bin/bash
+set -euo pipefail
+
+alias hl="git --git-dir=\$HOME/.homelab --work-tree=$\HOME"
+
+hl commit -am "chore: backup config files"
+hl pull
+hl push
