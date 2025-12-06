@@ -1,13 +1,13 @@
 services:
   radarr:
-    image: linuxserver/radarr
+    image: lscr.io/linuxserver/radarr
     container_name: radarr
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/Madrid
     volumes:
-      - ${HOME}/homeflix/radarr/config:/config
+      - ./radarr/config:/config
       - media:/data/media
       - torrents:/data/torrents
     ports:
@@ -21,14 +21,14 @@ services:
       - homepage.description=Movie management
 
   sonarr-series:
-    image: linuxserver/sonarr
+    image: lscr.io/linuxserver/sonarr
     container_name: sonarr-series
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/Madrid
     volumes:
-      - ${HOME}/homeflix/sonarr-series/config:/config
+      - ./sonarr-series/config:/config
       - media:/data/media
       - torrents:/data/torrents
     ports:
@@ -42,14 +42,14 @@ services:
       - homepage.description=Series manager
 
   sonarr-anime:
-    image: linuxserver/sonarr
+    image: lscr.io/linuxserver/sonarr
     container_name: sonarr-anime
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/Madrid
     volumes:
-      - ${HOME}/homeflix/sonarr-anime/config:/config
+      - ./sonarr-anime/config:/config
       - media:/data/media
       - torrents:/data/torrents
     ports:
@@ -68,17 +68,17 @@ services:
     environment:
       - TZ=Europe/Madrid
     volumes:
-      - ${HOME}/homeflix/recyclarr/config:/config
+      - ./recyclarr/config:/config
 
   prowlarr:
-    image: linuxserver/prowlarr
+    image: lscr.io/linuxserver/prowlarr
     container_name: prowlarr
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/Madrid
     volumes:
-      - ${HOME}/homeflix/prowlarr/config:/config
+      - ./prowlarr/config:/config
     ports:
       - 9696:9696
     restart: unless-stopped
@@ -90,18 +90,18 @@ services:
       - homepage.description=Indexer manager
 
   qbittorrent:
-    image: linuxserver/qbittorrent
+    image: lscr.io/linuxserver/qbittorrent
     container_name: qbittorrent
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/Madrid
-      - WEBUI_PORT=8080
+      - WEBUI_PORT=9090
     volumes:
-      - ${HOME}/homeflix/qbittorrent/config:/config
+      - ./qbittorrent/config:/config
       - torrents:/data/torrents
     ports:
-      - 8080:8080
+      - 9090:9090
       - 6881:6881
       - 6881:6881/udp
     restart: unless-stopped
@@ -109,18 +109,18 @@ services:
       - homepage.group=Media
       - homepage.name=qBittorrent
       - homepage.icon=qbittorrent.png
-      - homepage.href=http://${TAILSCALE_MACHINE}.${TAILSCALE_TAILNET}:8080
+      - homepage.href=http://${TAILSCALE_MACHINE}.${TAILSCALE_TAILNET}:9090
       - homepage.description=BitTorrent client
 
   bazarr:
-    image: linuxserver/bazarr
+    image: lscr.io/linuxserver/bazarr
     container_name: bazarr
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/Madrid
     volumes:
-      - ${HOME}/homeflix/bazarr/config:/config
+      - ./bazarr/config:/config
       - media:/data/media
     ports:
       - 6767:6767
@@ -133,14 +133,14 @@ services:
       - homepage.description=Subtitles manager
 
   bazarr-anime:
-    image: linuxserver/bazarr
+    image: lscr.io/linuxserver/bazarr
     container_name: bazarr-anime
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/Madrid
     volumes:
-      - ${HOME}/homeflix/bazarr-anime/config:/config
+      - ./bazarr-anime/config:/config
       - media:/data/media
     ports:
       - 6768:6767
@@ -153,11 +153,14 @@ services:
       - homepage.description=Subtitles manager
 
   jellyfin:
-    image: jellyfin/jellyfin
+    image: lscr.io/linuxserver/jellyfin
     container_name: jellyfin
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Madrid
     volumes:
-      - ${HOME}/homeflix/jellyfin/cache:/cache
-      - ${HOME}/homeflix/jellyfin/config:/config
+      - ./jellyfin/config:/config
       - media:/data/media
     ports:
       - 8096:8096
