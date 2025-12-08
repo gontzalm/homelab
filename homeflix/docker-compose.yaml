@@ -2,163 +2,201 @@ services:
   radarr:
     image: lscr.io/linuxserver/radarr
     container_name: radarr
+    restart: unless-stopped
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Madrid
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TZ}
     volumes:
       - ./radarr/config:/config
       - media:/data/media
       - torrents:/data/torrents
     ports:
       - 7878:7878
-    restart: unless-stopped
+    networks:
+      - homelab
     labels:
       - homepage.group=Media
       - homepage.name=Radarr
       - homepage.icon=radarr.png
       - homepage.href=http://${TAILSCALE_MACHINE}.${TAILSCALE_TAILNET}:7878
       - homepage.description=Movie management
+      - homepage.widget.type=radarr
+      - homepage.widget.url=http://radarr:7878
+      - homepage.widget.key=${RADARR_API_KEY}
 
   sonarr-series:
     image: lscr.io/linuxserver/sonarr
     container_name: sonarr-series
+    restart: unless-stopped
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Madrid
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TZ}
     volumes:
       - ./sonarr-series/config:/config
       - media:/data/media
       - torrents:/data/torrents
     ports:
       - 8989:8989
-    restart: unless-stopped
+    networks:
+      - homelab
     labels:
       - homepage.group=Media
       - homepage.name=Sonarr - Series
       - homepage.icon=sonarr.png
       - homepage.href=http://${TAILSCALE_MACHINE}.${TAILSCALE_TAILNET}:8989
       - homepage.description=Series manager
+      - homepage.widget.type=sonarr
+      - homepage.widget.url=http://sonarr-series:8989
+      - homepage.widget.key=${SONARR_SERIES_API_KEY}
 
   sonarr-anime:
     image: lscr.io/linuxserver/sonarr
     container_name: sonarr-anime
+    restart: unless-stopped
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Madrid
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TZ}
     volumes:
       - ./sonarr-anime/config:/config
       - media:/data/media
       - torrents:/data/torrents
     ports:
       - 8990:8989
-    restart: unless-stopped
+    networks:
+      - homelab
     labels:
       - homepage.group=Media
       - homepage.name=Sonarr - Anime
       - homepage.icon=sonarr.png
       - homepage.href=http://${TAILSCALE_MACHINE}.${TAILSCALE_TAILNET}:8990
       - homepage.description=Anime manager
+      - homepage.widget.type=sonarr
+      - homepage.widget.url=http://sonarr-anime:8989
+      - homepage.widget.key=${SONARR_ANIME_API_KEY}
 
   recyclarr:
     image: recyclarr/recyclarr
     container_name: recyclarr
+    restart: unless-stopped
     environment:
-      - TZ=Europe/Madrid
+      TZ: ${TZ}
     volumes:
       - ./recyclarr/config:/config
 
   prowlarr:
     image: lscr.io/linuxserver/prowlarr
     container_name: prowlarr
+    restart: unless-stopped
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Madrid
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TZ}
     volumes:
       - ./prowlarr/config:/config
     ports:
       - 9696:9696
-    restart: unless-stopped
+    networks:
+      - homelab
     labels:
       - homepage.group=Media
       - homepage.name=Prowlarr
       - homepage.icon=prowlarr.png
       - homepage.href=http://${TAILSCALE_MACHINE}.${TAILSCALE_TAILNET}:9696
       - homepage.description=Indexer manager
+      - homepage.widget.type=prowlarr
+      - homepage.widget.url=http://prowlarr:9696
+      - homepage.widget.key=${PROWLARR_API_KEY}
 
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent
     container_name: qbittorrent
+    restart: unless-stopped
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Madrid
-      - WEBUI_PORT=9090
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TZ}
+      WEBUI_PORT: ${QBITTORRENT_WEBUI_PORT}
     volumes:
       - ./qbittorrent/config:/config
       - torrents:/data/torrents
     ports:
-      - 9090:9090
+      - ${QBITTORRENT_WEBUI_PORT}:${QBITTORRENT_WEBUI_PORT}
       - 6881:6881
       - 6881:6881/udp
-    restart: unless-stopped
+    networks:
+      - homelab
     labels:
       - homepage.group=Media
       - homepage.name=qBittorrent
       - homepage.icon=qbittorrent.png
-      - homepage.href=http://${TAILSCALE_MACHINE}.${TAILSCALE_TAILNET}:9090
+      - homepage.href=http://${TAILSCALE_MACHINE}.${TAILSCALE_TAILNET}:${QBITTORRENT_WEBUI_PORT}
       - homepage.description=BitTorrent client
+      - homepage.widget.type=qbittorrent
+      - homepage.widget.url=http://qbittorrent:${QBITTORRENT_WEBUI_PORT}
+      - homepage.widget.username=admin
+      - homepage.widget.password=${QBITTORRENT_PASSWORD}
 
   bazarr:
     image: lscr.io/linuxserver/bazarr
     container_name: bazarr
+    restart: unless-stopped
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Madrid
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TZ}
     volumes:
       - ./bazarr/config:/config
       - media:/data/media
     ports:
       - 6767:6767
-    restart: unless-stopped
+    networks:
+      - homelab
     labels:
       - homepage.group=Media
-      - homepage.name=Bazarr - Series
+      - homepage.name=Bazarr
       - homepage.icon=bazarr.png
       - homepage.href=http://${TAILSCALE_MACHINE}.${TAILSCALE_TAILNET}:6767
       - homepage.description=Subtitles manager
+      - homepage.widget.type=bazarr
+      - homepage.widget.url=http://bazarr:6767
+      - homepage.widget.key=${BAZARR_API_KEY}
 
   bazarr-anime:
     image: lscr.io/linuxserver/bazarr
     container_name: bazarr-anime
+    restart: unless-stopped
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Madrid
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TZ}
     volumes:
       - ./bazarr-anime/config:/config
       - media:/data/media
     ports:
       - 6768:6767
-    restart: unless-stopped
+    networks:
+      - homelab
     labels:
       - homepage.group=Media
       - homepage.name=Bazarr - Anime
       - homepage.icon=bazarr.png
       - homepage.href=http://${TAILSCALE_MACHINE}.${TAILSCALE_TAILNET}:6768
       - homepage.description=Subtitles manager
+      - homepage.widget.type=bazarr
+      - homepage.widget.url=http://bazarr-anime:6767
+      - homepage.widget.key=${BAZARR_ANIME_API_KEY}
 
   jellyfin:
     image: lscr.io/linuxserver/jellyfin
     container_name: jellyfin
+    restart: unless-stopped
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Madrid
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TZ}
     volumes:
       - ./jellyfin/config:/config
       - media:/data/media
@@ -167,23 +205,60 @@ services:
       - 8092:8092
       - 7359:7359/udp
       - 1900:1900/udp
-    restart: unless-stopped
+    networks:
+      - homelab
     labels:
       - homepage.group=Media
       - homepage.name=Jellyfin
       - homepage.icon=jellyfin.png
       - homepage.href=http://${TAILSCALE_MACHINE}.${TAILSCALE_TAILNET}:8096
       - homepage.description=Media system
+      - homepage.widget.type=jellyfin
+      - homepage.widget.url=http://jellyfin:8096
+      - homepage.widget.key=${JELLYFIN_API_KEY}
+
+  jellyseerr:
+    image: ghcr.io/fallenbagel/jellyseerr
+    init: true
+    container_name: jellyseerr
+    restart: unless-stopped
+    environment:
+      LOG_LEVEL: debug
+      TZ: ${TZ}
+    volumes:
+      - .jellyseerr/config:/app/config
+    ports:
+      - 5055:5055
+    networks:
+      - homelab
+    healthcheck:
+      test:
+        wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/status
+        || exit 1
+      start_period: 20s
+      timeout: 3s
+      interval: 15s
+      retries: 3
+    labels:
+      - homepage.group=Media
+      - homepage.name=Jellyseerr
+      - homepage.icon=jellyseerr.png
+      - homepage.href=http://${TAILSCALE_MACHINE}.${TAILSCALE_TAILNET}:5055
+      - homepage.description=Request management system
+      - homepage.widget.type=jellyseerr
+      - homepage.widget.url=http://jellyseerr:5055
+      - homepage.widget.key=${JELLYSEERR_API_KEY}
 
   watchtower:
     image: containrrr/watchtower
     container_name: watchtower
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
     environment:
-      TZ: Europe/Madrid
+      TZ: ${TZ}
       WATCHTOWER_CLEANUP: true
       WATCHTOWER_SCHEDULE: 0 0 4 ? * sun
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
 
 volumes:
   media:
@@ -199,3 +274,7 @@ volumes:
       type: ext4
       device: /mnt/hdd/data/torrents
       o: bind
+
+networks:
+  homelab:
+    name: homelab

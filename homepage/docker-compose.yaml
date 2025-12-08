@@ -2,6 +2,7 @@ services:
   dockerproxy:
     image: ghcr.io/tecnativa/docker-socket-proxy
     container_name: dockerproxy
+    restart: unless-stopped
     environment:
       - CONTAINERS=1 # Allow access to viewing containers
       - SERVICES=1 # Allow access to viewing services (necessary when using Docker Swarm)
@@ -11,18 +12,25 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     ports:
       - 127.0.0.1:2375:2375
-    restart: unless-stopped
+    networks:
+      - homelab
 
   homepage:
     image: ghcr.io/gethomepage/homepage
     container_name: homepage
+    restart: unless-stopped
     environment:
       PUID: 1000
       PGID: 1000
       HOMEPAGE_ALLOWED_HOSTS: ${TAILSCALE_MACHINE}.${TAILSCALE_TAILNET}:3000
     volumes:
       - ./config:/app/config
-      - /var/run/docker.sock:/var/run/docker.sock:ro
     ports:
       - 3000:3000
-    restart: unless-stopped
+    networks:
+      - homelab
+
+networks:
+  homelab:
+    name: homelab
+    external: true

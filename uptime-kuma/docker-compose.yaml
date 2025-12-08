@@ -2,13 +2,23 @@ services:
   uptime-kuma:
     image: louislam/uptime-kuma:2
     container_name: uptime-kuma
+    restart: unless-stopped
     volumes:
       - ./data:/app/data
     ports:
       - 3001:3001
-    restart: unless-stopped
+    networks:
+      - homelab
     labels:
       - homepage.group=Observability
       - homepage.name=Uptime Kuma
       - homepage.icon=uptime-kuma.png
       - homepage.href=http://${TAILSCALE_MACHINE}.${TAILSCALE_TAILNET}:3001
+      - homepage.widget.type=uptimekuma
+      - homepage.widget.url=http://uptime-kuma:3001
+      - homepage.widget.slug=homelab
+
+networks:
+  homelab:
+    name: homelab
+    external: true
