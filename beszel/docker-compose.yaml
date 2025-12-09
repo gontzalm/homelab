@@ -11,11 +11,11 @@ services:
     networks:
       - homelab
     labels:
-      homepage.group: Observability
+      homepage.group: Monitoring
       homepage.name: Beszel
       homepage.icon: beszel.png
       homepage.href: https://${TAILSCALE_MACHINE}.${TAILSCALE_TAILNET}:8090
-      homepage.description: Server monitoring platform
+      homepage.description: Server monitoring
       homepage.widget.type: beszel
       homepage.widget.url: http://beszel:8090
       homepage.widget.username: ${USERNAME}

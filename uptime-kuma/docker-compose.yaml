@@ -10,11 +10,11 @@ services:
     networks:
       - homelab
     labels:
-      homepage.group: Observability
+      homepage.group: Monitoring
       homepage.name: Uptime Kuma
       homepage.icon: uptime-kuma.png
       homepage.href: https://${TAILSCALE_MACHINE}.${TAILSCALE_TAILNET}:3001
-      homepage.description: Uptime monitoring tool
+      homepage.description: Uptime monitoring
       homepage.widget.type: uptimekuma
       homepage.widget.url: http://uptime-kuma:3001
       homepage.widget.slug: homelab
