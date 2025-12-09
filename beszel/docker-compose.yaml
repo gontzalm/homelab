@@ -11,17 +11,17 @@ services:
     networks:
       - homelab
     labels:
-      - homepage.group=Observability
-      - homepage.name=Beszel
-      - homepage.icon=beszel.png
-      - homepage.href=https://${TAILSCALE_MACHINE}.${TAILSCALE_TAILNET}:8090
-      - homepage.description=Server monitoring platform
-      - homepage.widget.type=beszel
-      - homepage.widget.url=http://beszel:8090
-      - homepage.widget.username=${USERNAME}
-      - homepage.widget.password=${PASSWORD}
-      - homepage.widget.systemId=homelab
-      - homepage.widget.version=2
+      homepage.group: Observability
+      homepage.name: Beszel
+      homepage.icon: beszel.png
+      homepage.href: https://${TAILSCALE_MACHINE}.${TAILSCALE_TAILNET}:8090
+      homepage.description: Server monitoring platform
+      homepage.widget.type: beszel
+      homepage.widget.url: http://beszel:8090
+      homepage.widget.username: ${USERNAME}
+      homepage.widget.password: ${PASSWORD}
+      homepage.widget.systemId: homelab
+      homepage.widget.version: 2
 
   beszel-agent:
     image: henrygd/beszel-agent
