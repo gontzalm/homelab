@@ -22,11 +22,11 @@ services:
     environment:
       PUID: 1000
       PGID: 1000
-      HOMEPAGE_ALLOWED_HOSTS: ${TAILSCALE_MACHINE}.${TAILSCALE_TAILNET}:3000
+      HOMEPAGE_ALLOWED_HOSTS: ${TAILSCALE_MACHINE}.${TAILSCALE_TAILNET}
     volumes:
       - ./config:/app/config
     ports:
-      - 3000:3000
+      - 127.0.0.1:3000:3000
     networks:
       - homelab
 

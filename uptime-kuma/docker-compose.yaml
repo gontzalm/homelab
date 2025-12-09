@@ -6,14 +6,15 @@ services:
     volumes:
       - ./data:/app/data
     ports:
-      - 3001:3001
+      - 127.0.0.1:3001:3001
     networks:
       - homelab
     labels:
       - homepage.group=Observability
       - homepage.name=Uptime Kuma
       - homepage.icon=uptime-kuma.png
-      - homepage.href=http://${TAILSCALE_MACHINE}.${TAILSCALE_TAILNET}:3001
+      - homepage.href=https://${TAILSCALE_MACHINE}.${TAILSCALE_TAILNET}:3001
+      - homepage.description=Uptime monitoring tool
       - homepage.widget.type=uptimekuma
       - homepage.widget.url=http://uptime-kuma:3001
       - homepage.widget.slug=homelab
