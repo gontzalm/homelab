@@ -1,0 +1,29 @@
+services:
+  adguardhome:
+    image: adguard/adguardhome
+    container_name: adguardhome
+    volumes:
+      - .config:/opt/adguardhome/conf
+      - .work:/opt/adguardhome/work
+    ports:
+      - 53:53 # plain dns over tcp
+      - 53:53/udp # plain dns over udp
+      - 127.0.0.1:8080:80 # http web interface
+      # - 4000:3000 # initial setup web interface
+    networks:
+      - homelab
+    labels:
+      homepage.group: Networking
+      homepage.name: Adguard Home
+      homepage.icon: adguard-home.png
+      homepage.href: https://${TAILSCALE_MACHINE}.${TAILSCALE_TAILNET}:8080
+      homepage.description: Ad and tracking blocker
+      homepage.widget.type: adguard
+      homepage.widget.url: http://adguardhome
+      homepage.widget.username: ${USERNAME}
+      homepage.widget.password: ${PASSWORD}
+
+networks:
+  homelab:
+    name: homelab
+    external: true
