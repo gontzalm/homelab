@@ -2,6 +2,7 @@ services:
   adguardhome:
     image: adguard/adguardhome
     container_name: adguardhome
+    restart: unless-stopped
     volumes:
       - .config:/opt/adguardhome/conf
       - .work:/opt/adguardhome/work
