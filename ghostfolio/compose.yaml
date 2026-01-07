@@ -1,0 +1,91 @@
+services:
+  ghostfolio:
+    image: ghostfolio/ghostfolio
+    container_name: ghostfolio
+    restart: unless-stopped
+    env_file: .env
+    init: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - 127.0.0.1:3333:3333
+    networks:
+      - homelab
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3333/api/v1/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    labels:
+      homepage.group: Tools
+      homepage.name: Ghostfolio
+      homepage.icon: ghostfolio.png
+      homepage.href: https://${TAILSCALE_MACHINE}.${TAILSCALE_TAILNET}:3333
+      homepage.description: Wealth manager
+      homepage.widget.type: ghostfolio
+      homepage.widget.url: https://${TAILSCALE_MACHINE}.${TAILSCALE_TAILNET}:3333
+      homepage.widget.key: ${GHOSTFOLIO_TOKEN}
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: gf-postgres
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    networks:
+      - homelab
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_READ_SEARCH
+      - FOWNER
+      - SETGID
+      - SETUID
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test:
+        ['CMD-SHELL', 'pg_isready -d "$${POSTGRES_DB}" -U $${POSTGRES_USER}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: docker.io/library/redis:alpine
+    container_name: gf-redis
+    restart: unless-stopped
+    env_file: .env
+    networks:
+      - homelab
+    user: '999:1000'
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    command:
+      - /bin/sh
+      - -c
+      - redis-server --requirepass "$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}"
+    healthcheck:
+      test:
+        ['CMD-SHELL', 'redis-cli --pass "$${REDIS_PASSWORD}" ping | grep PONG']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres:
+
+networks:
+  homelab:
+    name: homelab
+    external: true
