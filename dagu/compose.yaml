@@ -1,0 +1,41 @@
+services:
+  dagu:
+    image: ghcr.io/dagu-org/dagu
+    container_name: dagu
+    restart: unless-stopped
+    entrypoint: []
+    command: ["dagu", "start-all"]
+    user: 0:0
+    volumes:
+      - dagu-data:/var/lib/dagu
+      - ./dags:/var/lib/dagu/dags:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 127.0.0.1:8525:8080
+    networks:
+      - homelab
+    environment:
+      DAGU_DAGS_DIR: /var/lib/dagu/dags
+      DAGU_AUTH_BASIC_USERNAME: admin
+      DAGU_AUTH_BASIC_PASSWORD: ${DAGU_AUTH_BASIC_PASSWORD}
+      DAGU_TZ: ${TZ}
+
+  python-worker:
+    image: astral/uv:python3.14-alpine
+    container_name: dagu-python-worker
+    restart: unless-stopped
+    command: ["sleep", "infinity"]
+    tty: true
+    stdin_open: true
+    volumes:
+      - ./scripts:/scripts
+      - worker-venvs:/.venvs
+
+volumes:
+  dagu-data:
+  worker-venvs:
+
+networks:
+  homelab:
+    name: homelab
+    external: true
