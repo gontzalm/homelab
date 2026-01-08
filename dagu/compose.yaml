@@ -6,6 +6,11 @@ services:
     entrypoint: []
     command: ["dagu", "start-all"]
     user: 0:0
+    environment:
+      DAGU_DAGS_DIR: /var/lib/dagu/dags
+      DAGU_AUTH_BASIC_USERNAME: admin
+      DAGU_AUTH_BASIC_PASSWORD: ${DAGU_AUTH_BASIC_PASSWORD}
+      DAGU_TZ: ${TZ}
     volumes:
       - dagu-data:/var/lib/dagu
       - ./dags:/var/lib/dagu/dags:ro
@@ -14,11 +19,12 @@ services:
       - 127.0.0.1:8525:8080
     networks:
       - homelab
-    environment:
-      DAGU_DAGS_DIR: /var/lib/dagu/dags
-      DAGU_AUTH_BASIC_USERNAME: admin
-      DAGU_AUTH_BASIC_PASSWORD: ${DAGU_AUTH_BASIC_PASSWORD}
-      DAGU_TZ: ${TZ}
+    labels:
+      homepage.group: Tools
+      homepage.name: Dagu
+      homepage.icon: apache-airflow.png
+      homepage.href: https://${TAILSCALE_MACHINE}.${TAILSCALE_TAILNET}:8525
+      homepage.description: Lightweight workflow engine
 
   python-worker:
     image: astral/uv:python3.14-alpine
