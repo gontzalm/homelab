@@ -1,0 +1,7 @@
+[users.gontz.indexa_capital]
+account_number = "9AQ2W14Z"
+ghostfolio_account_id = "6b006d67-3039-4bb7-b99d-b26af971f673"
+
+[users.gontz.freedom24]
+ghostfolio_account_id = "76e074e0-d945-49e3-be89-2ec68c99ab16"
+sync_from_historical = 2026-01-07T16:50:00.000Z

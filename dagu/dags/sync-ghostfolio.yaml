@@ -1,0 +1,12 @@
+description: Syncs Ghostfolio with financial platforms
+schedule: "0 2 * * *"
+
+container:
+  exec: dagu-python-worker
+  workingDir: /scripts/${DAG_NAME}
+  env:
+    - UV_PROJECT_ENVIRONMENT: /.venvs/sync-ghostfolio
+
+steps:
+  - name: sync-gontz
+    command: uv run sync-ghostfolio gontz

@@ -36,6 +36,8 @@ services:
     volumes:
       - ./scripts:/scripts
       - worker-venvs:/.venvs
+    networks:
+      - homelab
 
 volumes:
   dagu-data:
