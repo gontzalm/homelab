@@ -7,10 +7,11 @@ from dotenv import dotenv_values
 from ghostfolio import Ghostfolio  # pyright: ignore[reportMissingTypeStubs]
 
 from .models import Config
-from .platforms.freedom24 import Freedom24Synchronizer
-from .platforms.indexa import IndexaCapitalSynchronizer
+from .synchronizers.freedom24 import Freedom24Synchronizer
+from .synchronizers.indexa import IndexaCapitalSynchronizer
 
 logging.basicConfig(level=logging.INFO)
+logging.getLogger("httpx").setLevel(logging.WARNING)
 
 env: dict[str, str] = dotenv_values()  # pyright: ignore[reportAssignmentType]
 
@@ -21,7 +22,8 @@ def main() -> None:
     user_platforms = config["users"][user]
 
     ghostfolio = Ghostfolio(
-        token=env["GHOSTFOLIO_TOKEN"], host="http://ghostfolio:3333"
+        token=env["GHOSTFOLIO_TOKEN"],
+        host="http://ghostfolio:3333",
     )
 
     for platform in user_platforms:
@@ -42,7 +44,6 @@ def main() -> None:
                     f24_config["ghostfolio_account_id"],
                     env[f"{user.upper()}_FREEDOM24_PUBLIC_KEY"],
                     env[f"{user.upper()}_FREEDOM24_PRIVATE_KEY"],
-                    f24_config["sync_from_historical"],
                 )
 
             case _:

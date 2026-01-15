@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import NotRequired, TypedDict
 
 
@@ -11,7 +10,7 @@ class IndexaCapitalConfig(PlatformConfig):
 
 
 class Freedom24Config(PlatformConfig):
-    sync_from_historical: datetime
+    pass
 
 
 class UserPlatforms(TypedDict):

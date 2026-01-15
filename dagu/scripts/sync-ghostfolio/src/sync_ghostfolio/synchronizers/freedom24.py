@@ -1,4 +1,3 @@
-import json
 import logging
 from datetime import date, datetime, timedelta
 from functools import cached_property
@@ -17,8 +16,8 @@ logger = logging.getLogger(__name__)
 class Freedom24Synchronizer(PlatformSynchronizer):
     _ID_COMMENT_PREFIX = "ID: "
     _IGNORE_INSTRUMENTS = ("USD/EUR",)
-    _BUY_OPERATION = 1
-    _SELL_OPERATION = 3
+    _BUY_TRADE_TYPE = 1
+    _MAIN_CASH_ACCOUNT_CURRENCY = "EUR"
 
     def __init__(
         self,
@@ -26,22 +25,26 @@ class Freedom24Synchronizer(PlatformSynchronizer):
         ghostfolio_account_id: str,
         freedom24_public_key: str,
         freedom24_private_key: str,
-        sync_from_historical: datetime,
     ) -> None:
         super().__init__(ghostfolio_client, ghostfolio_account_id)
-        self._sync_from_historical = sync_from_historical
         self._tradernet = Tradernet(freedom24_public_key, freedom24_private_key)
 
     @cached_property
-    def _sync_from(self) -> datetime:
+    def _sync_from(self) -> date:
         activities: list[GhostfolioActivity] = self._ghostfolio.orders(  # pyright: ignore[reportAny]
             account_id=self._ghostfolio_account_id
         )["activities"]
 
         if not activities:
-            return self._sync_from_historical
+            return date(1970, 1, 1)
 
-        return max(datetime.fromisoformat(activity["date"]) for activity in activities)
+        max_datetime = max(
+            datetime.fromisoformat(activity["date"]) for activity in activities
+        )
+
+        return date(
+            max_datetime.year, max_datetime.month, max_datetime.day
+        ) + timedelta(days=1)
 
     @staticmethod
     def _convert_symbol_to_yahoo(symbol: str) -> str:
@@ -54,40 +57,37 @@ class Freedom24Synchronizer(PlatformSynchronizer):
 
     def _get_trades(self) -> list[GhostfolioActivity]:
         logger.info("Retrieving trades from %s onwards", self._sync_from.isoformat())
-        orders = self._tradernet.get_historical(start=self._sync_from)["orders"][  # pyright: ignore[reportAny]
-            "order"
-        ]
-        # This step is necessary because the 'start' argument is truncated to the date
-        # in the previous retrieval
-        orders = [
-            order
-            for order in orders  # pyright: ignore[reportAny]
-            if datetime.fromisoformat(order["date"] + "Z") > self._sync_from  # pyright: ignore[reportAny]
-        ]
+        trades = self._tradernet.get_trades_history(  # pyright: ignore[reportAny]
+            start=self._sync_from, end=(date.today() - timedelta(days=1))
+        )["trades"]["trade"]
 
         return [
             {
                 "accountId": self._ghostfolio_account_id,
                 "comment": self._ID_COMMENT_PREFIX + str(trade["id"]),  # pyright: ignore[reportAny]
-                "currency": order["cur"],
+                "currency": trade["curr_c"],
                 "dataSource": "YAHOO",
                 "date": trade["date"] + "Z",
-                "fee": 0,
-                "quantity": trade["q"],
-                "symbol": self._convert_symbol_to_yahoo(order["instr"]),  # pyright: ignore[reportAny]
-                "type": "BUY" if order["oper"] == self._BUY_OPERATION else "SELL",
-                "unitPrice": trade["p"],
+                "fee": float(trade["commission"]),  # pyright: ignore[reportAny]
+                "quantity": float(trade["q"]),  # pyright: ignore[reportAny]
+                "symbol": self._convert_symbol_to_yahoo(trade["instr_nm"]),  # pyright: ignore[reportAny]
+                "type": "BUY" if int(trade["type"]) == self._BUY_TRADE_TYPE else "SELL",  # pyright: ignore[reportAny]
+                "unitPrice": float(trade["p"]),  # pyright: ignore[reportAny]
             }
-            for order in orders  # pyright: ignore[reportAny]
-            if order["instr"] not in self._IGNORE_INSTRUMENTS and "trade" in order
-            for trade in order["trade"]  # pyright: ignore[reportAny]
+            for trade in trades  # pyright: ignore[reportAny]
+            if trade["instr_nm"] not in self._IGNORE_INSTRUMENTS
         ]
-
-    def _get_fees(self) -> list[GhostfolioActivity]:
-        logger.info("Retrieving fees")
-        raise NotImplementedError
 
     @override
     def _get_new_activities(self) -> list[GhostfolioActivity]:
         return self._get_trades()
-        # return [*self._get_trades(), *self._get_fees()]
+
+    @override
+    def _get_cash_balance(self) -> float:
+        logger.info("Retrieving main account cash balance")
+        accounts = self._tradernet.get_user_data()["OPQ"]["ps"]["acc"]  # pyright: ignore[reportAny]
+        return next(  # pyright: ignore[reportAny]
+            acc["s"]
+            for acc in accounts  # pyright: ignore[reportAny]
+            if acc["curr"] == self._MAIN_CASH_ACCOUNT_CURRENCY
+        )

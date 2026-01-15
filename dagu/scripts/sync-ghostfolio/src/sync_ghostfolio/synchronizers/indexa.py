@@ -103,3 +103,13 @@ class IndexaCapitalSynchronizer(PlatformSynchronizer):
             if activity["comment"].removeprefix(self._REFERENCE_COMMENT_PREFIX)  # pyright: ignore[reportTypedDictNotRequiredAccess]
             not in self._existing_references
         ]
+
+    @override
+    def _get_cash_balance(self) -> float:
+        logger.info(
+            "Retrieving cash balance for account number '%s'", self._account_number
+        )
+        r = self._indexa.get("/portfolio")
+        _ = r.raise_for_status()
+
+        return r.json()["portfolio"]["cash_amount"]  # pyright: ignore[reportAny]
