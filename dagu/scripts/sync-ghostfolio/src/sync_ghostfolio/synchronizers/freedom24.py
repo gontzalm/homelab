@@ -1,5 +1,5 @@
 import logging
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from functools import cached_property
 from typing import final, override
 
@@ -7,7 +7,7 @@ from ghostfolio import Ghostfolio  # pyright: ignore[reportMissingTypeStubs]
 from tradernet import Tradernet
 
 from ..models import GhostfolioActivity
-from ._synchronizer import PlatformSynchronizer
+from ._base import PlatformSynchronizer
 
 logger = logging.getLogger(__name__)
 
@@ -31,17 +31,7 @@ class Freedom24Synchronizer(PlatformSynchronizer):
 
     @cached_property
     def _sync_from(self) -> date:
-        activities: list[GhostfolioActivity] = self._ghostfolio.orders(  # pyright: ignore[reportAny]
-            account_id=self._ghostfolio_account_id
-        )["activities"]
-
-        if not activities:
-            return date(1970, 1, 1)
-
-        max_datetime = max(
-            datetime.fromisoformat(activity["date"]) for activity in activities
-        )
-
+        max_datetime = self._get_max_account_datetime()
         return date(
             max_datetime.year, max_datetime.month, max_datetime.day
         ) + timedelta(days=1)

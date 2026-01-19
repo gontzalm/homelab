@@ -1,6 +1,17 @@
+[ghostfolio]
+host = "http://ghostfolio:3333"
+
+[crypto]
+proxy_url = "socks5h://tor-proxy:9050"
+mempool_url = "http://mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion"
+
 [users.gontz.indexa_capital]
 account_number = "9AQ2W14Z"
 ghostfolio_account_id = "6b006d67-3039-4bb7-b99d-b26af971f673"
 
 [users.gontz.freedom24]
 ghostfolio_account_id = "76e074e0-d945-49e3-be89-2ec68c99ab16"
+
+[users.gontz.crypto]
+ghostfolio_account_id = "07d71290-c1f8-44d9-bd35-2d396ad2724a"
+coins = ["BTC", "ETH"]

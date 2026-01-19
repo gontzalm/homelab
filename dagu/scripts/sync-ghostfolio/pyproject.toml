@@ -4,12 +4,13 @@ version = "0.1.0"
 description = "Syncs different finance platforms with Ghostfolio"
 readme = "README.md"
 authors = [{ name = "Gontzal Monasterio", email = "go.monasterio@gmail.com" }]
-requires-python = ">=3.14"
+requires-python = ">=3.13"
 dependencies = [
-    "dotenv>=0.9.9",
-    "ghostfolio>=0.8.0",
-    "httpx>=0.28.1",
-    "tradernet-sdk>=2.0.0",
+  "bip-utils>=2.10.0",
+  "dotenv>=0.9.9",
+  "ghostfolio>=0.8.0",
+  "httpx[socks]>=0.28.1",
+  "tradernet-sdk>=2.0.0",
 ]
 
 [project.scripts]

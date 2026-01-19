@@ -6,6 +6,11 @@ from pathlib import Path
 from dotenv import dotenv_values
 from ghostfolio import Ghostfolio  # pyright: ignore[reportMissingTypeStubs]
 
+from sync_ghostfolio.synchronizers.crypto import (
+    BtcSynchronizer,
+    EthSynchronizer,
+)
+
 from .models import Config
 from .synchronizers.freedom24 import Freedom24Synchronizer
 from .synchronizers.indexa import IndexaCapitalSynchronizer
@@ -22,8 +27,8 @@ def main() -> None:
     user_platforms = config["users"][user]
 
     ghostfolio = Ghostfolio(
-        token=env["GHOSTFOLIO_TOKEN"],
-        host="http://ghostfolio:3333",
+        token=env[f"{user.upper()}_GHOSTFOLIO_TOKEN"],
+        host=config["ghostfolio"]["host"],
     )
 
     for platform in user_platforms:
@@ -45,6 +50,36 @@ def main() -> None:
                     env[f"{user.upper()}_FREEDOM24_PUBLIC_KEY"],
                     env[f"{user.upper()}_FREEDOM24_PRIVATE_KEY"],
                 )
+
+            case "crypto":
+                crypto_config = user_platforms["crypto"]  # pyright: ignore[reportTypedDictNotRequiredAccess]
+                for coin in crypto_config["coins"]:
+                    match coin:
+                        case "BTC":
+                            synchronizer = BtcSynchronizer(
+                                ghostfolio,
+                                crypto_config["ghostfolio_account_id"],
+                                env["COINGECKO_DEMO_API_KEY"],
+                                env[f"{user.upper()}_BTC_ZPUB"],
+                                provider_url=config["crypto"]["mempool_url"],
+                                proxy_url=config["crypto"]["proxy_url"],
+                            )
+
+                        case "ETH":
+                            synchronizer = EthSynchronizer(
+                                ghostfolio,
+                                crypto_config["ghostfolio_account_id"],
+                                env["COINGECKO_DEMO_API_KEY"],
+                                env[f"{user.upper()}_ETH_ADDRESS"],
+                                proxy_url=config["crypto"]["proxy_url"],
+                            )
+
+                        case _:
+                            raise ValueError(f"Unsupported coin {coin}")
+
+                    synchronizer.sync()
+
+                continue
 
             case _:
                 raise ValueError(f"Unsupported platform {platform}")
