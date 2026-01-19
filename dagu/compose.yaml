@@ -27,7 +27,8 @@ services:
       homepage.description: Lightweight workflow engine
 
   python-worker:
-    image: astral/uv:python3.14-alpine
+    build:
+      dockerfile: python-worker.Dockerfile
     container_name: dagu-python-worker
     restart: unless-stopped
     command: ["sleep", "infinity"]
