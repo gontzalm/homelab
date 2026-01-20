@@ -10,3 +10,9 @@ container:
 steps:
   - name: sync-gontz
     command: uv run sync-ghostfolio gontz
+
+handlerOn:
+  failure:
+    command: >-
+      curl -H "Title: Dagu Worker" -H "Tags: warning,skull" -d "sync-ghostfolio
+      DAG failed" ntfy/dagu
