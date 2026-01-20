@@ -1,0 +1,20 @@
+services:
+  watchtower:
+    image: nickfedor/watchtower
+    container_name: watchtower
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ}
+      WATCHTOWER_CLEANUP: true
+      WATCHTOWER_SCHEDULE: 0 0 4 ? * sun
+      WATCHTOWER_NOTIFICATION_SKIP_TITLE: true
+      WATCHTOWER_NOTIFICATION_URL: ntfy://ntfy/watchtower?scheme=http&title=Watchtower%20Updates&tags=dizzy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - homelab
+
+networks:
+  homelab:
+    name: homelab
+    external: true

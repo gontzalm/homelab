@@ -246,17 +246,6 @@ services:
       homepage.widget.url: http://jellyseerr:5055
       homepage.widget.key: ${JELLYSEERR_API_KEY}
 
-  watchtower:
-    image: containrrr/watchtower
-    container_name: watchtower
-    restart: unless-stopped
-    environment:
-      TZ: ${TZ}
-      WATCHTOWER_CLEANUP: true
-      WATCHTOWER_SCHEDULE: 0 0 4 ? * sun
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-
 volumes:
   media:
     driver: local
@@ -275,3 +264,4 @@ volumes:
 networks:
   homelab:
     name: homelab
+    external: true
