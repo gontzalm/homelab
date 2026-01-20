@@ -3,6 +3,7 @@ from typing import NotRequired, TypedDict
 
 class GhostfolioConfig(TypedDict):
     host: str
+    ntfy_topic: str
 
 
 class GeneralCryptoConfig(TypedDict):
@@ -37,17 +38,3 @@ class Config(TypedDict):
     ghostfolio: GhostfolioConfig
     crypto: GeneralCryptoConfig
     users: dict[str, UserPlatforms]
-
-
-# See https://github.com/ghostfolio/ghostfolio?tab=readme-ov-file#import-activities
-class GhostfolioActivity(TypedDict):
-    accountId: NotRequired[str]  # Id of the account
-    comment: NotRequired[str]  # Comment of the activity
-    currency: str
-    dataSource: str  # COINGECKO | GHOSTFOLIO 1 | MANUAL | YAHOO
-    date: str
-    fee: float
-    quantity: float
-    symbol: str  # Symbol of the activity (suitable for `dataSource`)
-    type: str  # BUY | DIVIDEND | FEE | INTEREST | LIABILITY | SELL
-    unitPrice: float

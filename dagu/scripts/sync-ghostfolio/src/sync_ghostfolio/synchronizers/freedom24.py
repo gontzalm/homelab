@@ -6,8 +6,8 @@ from typing import final, override
 from ghostfolio import Ghostfolio  # pyright: ignore[reportMissingTypeStubs]
 from tradernet import Tradernet
 
-from ..models import GhostfolioActivity
 from ._base import PlatformSynchronizer
+from ._models import GhostfolioActivity
 
 logger = logging.getLogger(__name__)
 
@@ -25,8 +25,12 @@ class Freedom24Synchronizer(PlatformSynchronizer):
         ghostfolio_account_id: str,
         freedom24_public_key: str,
         freedom24_private_key: str,
+        *,
+        ntfy_topic: str | None = None,
     ) -> None:
-        super().__init__(ghostfolio_client, ghostfolio_account_id)
+        super().__init__(
+            ghostfolio_client, ghostfolio_account_id, ntfy_topic=ntfy_topic
+        )
         self._tradernet = Tradernet(freedom24_public_key, freedom24_private_key)
 
     @cached_property

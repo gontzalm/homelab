@@ -4,8 +4,8 @@ from typing import final, override
 import httpx
 from ghostfolio import Ghostfolio  # pyright: ignore[reportMissingTypeStubs]
 
-from ..models import GhostfolioActivity
 from ._base import PlatformSynchronizer
+from ._models import GhostfolioActivity
 
 logger = logging.getLogger(__name__)
 
@@ -25,8 +25,12 @@ class IndexaCapitalSynchronizer(PlatformSynchronizer):
         ghostfolio_account_id: str,
         indexa_capital_api_key: str,
         indexa_capital_account_number: str,
+        *,
+        ntfy_topic: str | None = None,
     ) -> None:
-        super().__init__(ghostfolio_client, ghostfolio_account_id)
+        super().__init__(
+            ghostfolio_client, ghostfolio_account_id, ntfy_topic=ntfy_topic
+        )
         self._account_number = indexa_capital_account_number
         self._indexa = httpx.Client(
             base_url=f"{self.BASE_URL}/accounts/{self._account_number}",

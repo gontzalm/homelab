@@ -40,6 +40,7 @@ def main() -> None:
                     indexa_config["ghostfolio_account_id"],
                     env[f"{user.upper()}_INDEXA_CAPITAL_API_KEY"],
                     indexa_config["account_number"],
+                    ntfy_topic=config["ghostfolio"]["ntfy_topic"],
                 )
 
             case "freedom24":
@@ -49,6 +50,7 @@ def main() -> None:
                     f24_config["ghostfolio_account_id"],
                     env[f"{user.upper()}_FREEDOM24_PUBLIC_KEY"],
                     env[f"{user.upper()}_FREEDOM24_PRIVATE_KEY"],
+                    ntfy_topic=config["ghostfolio"]["ntfy_topic"],
                 )
 
             case "crypto":
@@ -63,6 +65,7 @@ def main() -> None:
                                 env[f"{user.upper()}_BTC_ZPUB"],
                                 provider_url=config["crypto"]["mempool_url"],
                                 proxy_url=config["crypto"]["proxy_url"],
+                                ntfy_topic=config["ghostfolio"]["ntfy_topic"],
                             )
 
                         case "ETH":
@@ -72,6 +75,7 @@ def main() -> None:
                                 env["COINGECKO_DEMO_API_KEY"],
                                 env[f"{user.upper()}_ETH_ADDRESS"],
                                 proxy_url=config["crypto"]["proxy_url"],
+                                ntfy_topic=config["ghostfolio"]["ntfy_topic"],
                             )
 
                         case _:

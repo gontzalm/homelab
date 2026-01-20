@@ -3,9 +3,10 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from functools import cached_property
 
+import httpx
 from ghostfolio import Ghostfolio  # pyright: ignore[reportMissingTypeStubs]
 
-from ..models import GhostfolioActivity
+from ._models import GhostfolioAccount, GhostfolioActivity
 
 logger = logging.getLogger(__name__)
 
@@ -17,9 +18,12 @@ class PlatformSynchronizer(ABC):
         self,
         ghostfolio_client: Ghostfolio,
         ghostfolio_account_id: str,
+        *,
+        ntfy_topic: str | None = None,
     ) -> None:
         self._ghostfolio: Ghostfolio = ghostfolio_client
         self._ghostfolio_account_id: str = ghostfolio_account_id
+        self.ntfy_topic: str | None = ntfy_topic
 
     @cached_property
     def _existing_ids(self) -> set[str]:
@@ -31,6 +35,19 @@ class PlatformSynchronizer(ABC):
             activity["comment"].removeprefix(self._ID_COMMENT_PREFIX)  # pyright: ignore[reportTypedDictNotRequiredAccess]
             for activity in activities
         )
+
+    @cached_property
+    def _account(self) -> GhostfolioAccount:
+        try:
+            return next(
+                acc
+                for acc in self._ghostfolio.accounts()["accounts"]  # pyright: ignore[reportAny]
+                if acc["id"] == self._ghostfolio_account_id
+            )
+        except StopIteration:
+            raise ValueError(
+                f"Ghostfolio account with ID '{self._ghostfolio_account_id}' does not exist"
+            )
 
     def _activity_exists(self, activity: GhostfolioActivity) -> bool:
         return (
@@ -56,6 +73,22 @@ class PlatformSynchronizer(ABC):
 
         return max(datetime.fromisoformat(activity["date"]) for activity in activities)
 
+    def _notify_activities(self, activities: list[GhostfolioActivity]) -> None:
+        if self.ntfy_topic is None:
+            return
+
+        with httpx.Client() as http:
+            for activity in activities:
+                r = http.post(
+                    self.ntfy_topic,
+                    headers={
+                        "Title": f"New Ghostfolio Activity in {self._account['name']}",
+                        "Tags": "chart",
+                    },
+                    content=f"{activity['date']} -> {activity['type']} {activity['quantity']} {activity['symbol']} at {activity['unitPrice']} {activity['currency']}".encode(),
+                )
+                _ = r.raise_for_status()
+
     def _sync_activities(self) -> None:
         new_activities = self._get_new_activities()
         logger.info(
@@ -64,6 +97,7 @@ class PlatformSynchronizer(ABC):
             self._ghostfolio_account_id,
         )
         self._ghostfolio.import_transactions({"activities": new_activities})
+        self._notify_activities(new_activities)
 
     def _sync_cash_balance(self) -> None:
         balance = self._get_cash_balance()
@@ -75,20 +109,15 @@ class PlatformSynchronizer(ABC):
             "Synchronizing cash balance to Ghostfolio account ID '%s'",
             self._ghostfolio_account_id,
         )
-        account = next(  # pyright: ignore[reportAny]
-            acc
-            for acc in self._ghostfolio.accounts()["accounts"]  # pyright: ignore[reportAny]
-            if acc["id"] == self._ghostfolio_account_id
-        )
 
         _ = self._ghostfolio.put(
             "account",
             object_id=self._ghostfolio_account_id,
             data={
-                "id": account["id"],
-                "name": account["name"],
-                "currency": account["currency"],
-                "platformId": account["platformId"],
+                "id": self._account["id"],
+                "name": self._account["name"],
+                "currency": self._account["currency"],
+                "platformId": self._account["platformId"],
                 "balance": balance,
             },
         )

@@ -1,5 +1,6 @@
 [ghostfolio]
 host = "http://ghostfolio:3333"
+ntfy_topic = "http://ntfy/dagu"
 
 [crypto]
 proxy_url = "socks5h://tor-proxy:9050"

@@ -3,27 +3,27 @@ from abc import ABC, abstractmethod
 from datetime import UTC, date, datetime
 from decimal import Decimal
 from functools import cache, cached_property
-from typing import Any, ClassVar, Protocol, final, override
-from typing import TypeVar, Generic
+from typing import Any, ClassVar, Generic, Protocol, TypeVar, final, override
 
-from bip_utils.bip.bip84.bip84 import Bip44Base  # pyright: ignore[reportMissingTypeStubs]
 import httpx
 from bip_utils import (  # pyright: ignore[reportMissingTypeStubs]
     Bip44Changes,
     Bip84,
     Bip84Coins,
 )
+from bip_utils.bip.bip84.bip84 import (  # pyright: ignore[reportMissingTypeStubs]
+    Bip44Base,
+)
 from ghostfolio import Ghostfolio  # pyright: ignore[reportMissingTypeStubs]
 
-from sync_ghostfolio.models import GhostfolioActivity
-
 from ._base import PlatformSynchronizer
-from ._models import BtcTx, CryptoTx, EthTx
+from ._models import BtcTx, CryptoTx, EthTx, GhostfolioActivity
 
 logger = logging.getLogger(__name__)
 
 
 T = TypeVar("T", bound=CryptoTx)
+
 
 class CryptoConfig(Protocol):
     COINGECKO_COIN_ID: ClassVar[str]
@@ -75,7 +75,8 @@ class CryptoSynchronizer(PlatformSynchronizer, CryptoConfig, ABC, Generic[T]):
                 "currency": "USD",
                 "dataSource": "COINGECKO",
                 "date": tx["executed_at"].isoformat(),
-                "fee": float(tx["fee"]) * self._get_coin_price(tx["executed_at"].date()),
+                "fee": float(tx["fee"])
+                * self._get_coin_price(tx["executed_at"].date()),
                 "quantity": float(abs(tx["value"])),
                 "symbol": self.COINGECKO_COIN_ID,
                 "type": "BUY" if tx["value"] > 0 else "SELL",
@@ -83,13 +84,12 @@ class CryptoSynchronizer(PlatformSynchronizer, CryptoConfig, ABC, Generic[T]):
             }
             for tx in self._get_transactions()
         ]
-        return [
-            a for a in activities if not self._activity_exists(a)
-        ]
+        return [a for a in activities if not self._activity_exists(a)]
 
     @override
     def _get_cash_balance(self) -> None:
         return None
+
 
 @final
 class BtcSynchronizer(CryptoSynchronizer[BtcTx]):
@@ -105,10 +105,13 @@ class BtcSynchronizer(CryptoSynchronizer[BtcTx]):
         coingecko_api_key: str,
         zpub: str,
         *,
-        provider_url: str |None = None,
+        ntfy_topic: str | None = None,
+        provider_url: str | None = None,
         proxy_url: str | None = None,
     ) -> None:
-        super().__init__(ghostfolio_client, ghostfolio_account_id)
+        super().__init__(
+            ghostfolio_client, ghostfolio_account_id, ntfy_topic=ntfy_topic
+        )
         self._coingecko_api_key = coingecko_api_key
         self._zpub = zpub
         self.provider_url = provider_url or self._DEFAULT_PROVIDER_URL
@@ -121,7 +124,7 @@ class BtcSynchronizer(CryptoSynchronizer[BtcTx]):
 
     @cached_property
     def _derivation_ctx(self) -> Bip44Base:
-        return  Bip84.FromExtendedKey(self._zpub, Bip84Coins.BITCOIN)
+        return Bip84.FromExtendedKey(self._zpub, Bip84Coins.BITCOIN)
 
     @staticmethod
     def _sats_to_btc(sats: int) -> Decimal:
@@ -206,7 +209,6 @@ class BtcSynchronizer(CryptoSynchronizer[BtcTx]):
         return [tx for tx in aggregated_txs.values() if tx["value"]]
 
 
-
 @final
 class EthSynchronizer(CryptoSynchronizer[EthTx]):
     _DEFAULT_PROVIDER_URL = "https://eth.blockscout.com"
@@ -220,10 +222,13 @@ class EthSynchronizer(CryptoSynchronizer[EthTx]):
         coingecko_api_key: str,
         address: str,
         *,
+        ntfy_topic: str | None = None,
         provider_url: str | None = None,
         proxy_url: str | None = None,
     ) -> None:
-        super().__init__(ghostfolio_client, ghostfolio_account_id)
+        super().__init__(
+            ghostfolio_client, ghostfolio_account_id, ntfy_topic=ntfy_topic
+        )
         self._coingecko_api_key = coingecko_api_key
         self._address = address
         self.provider_url = provider_url or self._DEFAULT_PROVIDER_URL
@@ -245,7 +250,9 @@ class EthSynchronizer(CryptoSynchronizer[EthTx]):
         next_page_params = None
 
         while True:
-            r = self._http.get(f"/addresses/{self._address}/transactions", params=next_page_params)
+            r = self._http.get(
+                f"/addresses/{self._address}/transactions", params=next_page_params
+            )
             _ = r.raise_for_status()
 
             data = r.json()  # pyright: ignore[reportAny]
@@ -257,7 +264,8 @@ class EthSynchronizer(CryptoSynchronizer[EthTx]):
         return [
             {
                 "id": tx["hash"],
-                "value": self._wei_to_eth(int(tx["value"])) * (-1 if tx["from"]["hash"] == self._address else 1),  # pyright: ignore[reportAny]
+                "value": self._wei_to_eth(int(tx["value"]))  # pyright: ignore[reportAny]
+                * (-1 if tx["from"]["hash"] == self._address else 1),
                 "fee": self._wei_to_eth(tx["fee"]["value"]),  # pyright: ignore[reportAny]
                 "executed_at": datetime.fromisoformat(tx["timestamp"]),  # pyright: ignore[reportAny]
                 "block": tx["block_number"],
@@ -265,4 +273,3 @@ class EthSynchronizer(CryptoSynchronizer[EthTx]):
             for tx in txs
             if tx["status"] == "ok"
         ]
-
