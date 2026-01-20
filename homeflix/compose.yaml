@@ -223,7 +223,7 @@ services:
       LOG_LEVEL: debug
       TZ: ${TZ}
     volumes:
-      - .jellyseerr/config:/app/config
+      - ./jellyseerr/config:/app/config
     ports:
       - 127.0.0.1:5055:5055
     networks:

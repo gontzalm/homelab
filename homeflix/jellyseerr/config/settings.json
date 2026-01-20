@@ -1,0 +1,290 @@
+{
+ "clientId": "2f28a3f5-b8c2-4e8d-9c8b-403af7af705d",
+ "vapidPrivate": "SZhD8jV8SIbZG5OhVkZED5Hh6xmWHDIlF3ki34KfAD8",
+ "vapidPublic": "BAkOm-IVWfZqsjeR-6vkvD0zFvkW2rmmCpSua1VPOGfXX9XDCL_FB7tTvh9TqHEJTg-4u2xenlcMRzOFKvTru8c",
+ "main": {
+  "apiKey": "MTc2NTIyMDc4NTcxN2IwMmRkYWI0LWM3MzQtNGFlNS05ZTUzLTg2MWJjNmNjY2RiOQ==",
+  "applicationTitle": "Jellyseerr",
+  "applicationUrl": "",
+  "cacheImages": false,
+  "defaultPermissions": 1048608,
+  "defaultQuotas": {
+   "movie": {
+    "quotaLimit": 0,
+    "quotaDays": 7
+   },
+   "tv": {
+    "quotaLimit": 0,
+    "quotaDays": 7
+   }
+  },
+  "hideAvailable": false,
+  "hideBlacklisted": false,
+  "localLogin": false,
+  "mediaServerLogin": true,
+  "newPlexLogin": true,
+  "discoverRegion": "ES",
+  "streamingRegion": "ES",
+  "originalLanguage": "",
+  "blacklistedTags": "",
+  "blacklistedTagsLimit": 50,
+  "mediaServerType": 2,
+  "partialRequestsEnabled": true,
+  "enableSpecialEpisodes": false,
+  "locale": "en",
+  "youtubeUrl": ""
+ },
+ "plex": {
+  "name": "",
+  "ip": "",
+  "port": 32400,
+  "useSsl": false,
+  "libraries": []
+ },
+ "jellyfin": {
+  "name": "homelab",
+  "ip": "jellyfin",
+  "port": 8096,
+  "useSsl": false,
+  "urlBase": "",
+  "externalHostname": "https://homelab.airplane-bellatrix.ts.net:8096",
+  "jellyfinForgotPasswordUrl": "",
+  "libraries": [
+   {
+    "id": "0c41907140d802bb58430fed7e2cd79e",
+    "name": "Anime",
+    "enabled": true,
+    "type": "show"
+   },
+   {
+    "id": "f137a2dd21bbc1b99aa5c0f6bf02a805",
+    "name": "Movies",
+    "enabled": true,
+    "type": "movie"
+   },
+   {
+    "id": "5ddaa59a73205234890fdcfc683e14ed",
+    "name": "Series",
+    "enabled": true,
+    "type": "show"
+   }
+  ],
+  "serverId": "1274108a5d0a469fb82ddf85fcda0856",
+  "apiKey": "9b78d2f3d7374be6bf30fd5c98664af9"
+ },
+ "tautulli": {},
+ "radarr": [
+  {
+   "name": "radarr",
+   "hostname": "radarr",
+   "port": 7878,
+   "apiKey": "b28ff4dfd5b64fe9855c27a47cbf7aaf",
+   "useSsl": false,
+   "baseUrl": "",
+   "activeProfileId": 9,
+   "activeProfileName": "HD Bluray + WEB",
+   "activeDirectory": "/data/media/movies",
+   "is4k": false,
+   "minimumAvailability": "released",
+   "tags": [],
+   "isDefault": true,
+   "externalUrl": "https://homelab.airplane-bellatrix.ts.net:7878",
+   "syncEnabled": true,
+   "preventSearch": false,
+   "tagRequests": false,
+   "id": 0
+  }
+ ],
+ "sonarr": [
+  {
+   "name": "sonarr-series",
+   "hostname": "sonarr-series",
+   "port": 8989,
+   "apiKey": "d55e504109d140f88475cc4ebee4e7e3",
+   "useSsl": false,
+   "activeProfileId": 8,
+   "activeProfileName": "WEB-DL (1080p)",
+   "activeDirectory": "/data/media/series",
+   "tags": [],
+   "animeTags": [],
+   "is4k": false,
+   "isDefault": true,
+   "enableSeasonFolders": true,
+   "externalUrl": "https://homelab.airplane-bellatrix.ts.net:8989",
+   "syncEnabled": true,
+   "preventSearch": false,
+   "tagRequests": false,
+   "id": 0
+  },
+  {
+   "name": "sonarr-anime",
+   "hostname": "sonarr-anime",
+   "port": 8989,
+   "apiKey": "d55e504109d140f88475cc4ebee4e7e3",
+   "useSsl": false,
+   "activeProfileId": 7,
+   "activeProfileName": "Remux-1080p - Anime",
+   "activeDirectory": "/data/media/anime",
+   "animeSeriesType": "standard",
+   "activeAnimeDirectory": "",
+   "tags": [],
+   "animeTags": [],
+   "is4k": false,
+   "isDefault": false,
+   "enableSeasonFolders": true,
+   "externalUrl": "https://homelab.airplane-bellatrix.ts.net:8990",
+   "syncEnabled": true,
+   "preventSearch": false,
+   "tagRequests": false,
+   "id": 1
+  }
+ ],
+ "public": {
+  "initialized": true
+ },
+ "notifications": {
+  "agents": {
+   "email": {
+    "enabled": false,
+    "options": {
+     "userEmailRequired": false,
+     "emailFrom": "",
+     "smtpHost": "",
+     "smtpPort": 587,
+     "secure": false,
+     "ignoreTls": false,
+     "requireTls": false,
+     "allowSelfSigned": false,
+     "senderName": "Jellyseerr"
+    }
+   },
+   "discord": {
+    "enabled": false,
+    "types": 0,
+    "options": {
+     "webhookUrl": "",
+     "webhookRoleId": "",
+     "enableMentions": true
+    }
+   },
+   "slack": {
+    "enabled": false,
+    "types": 0,
+    "options": {
+     "webhookUrl": ""
+    }
+   },
+   "telegram": {
+    "enabled": false,
+    "types": 0,
+    "options": {
+     "botAPI": "",
+     "chatId": "",
+     "messageThreadId": "",
+     "sendSilently": false
+    }
+   },
+   "pushbullet": {
+    "enabled": false,
+    "types": 0,
+    "options": {
+     "accessToken": ""
+    }
+   },
+   "pushover": {
+    "enabled": false,
+    "types": 0,
+    "options": {
+     "accessToken": "",
+     "userToken": "",
+     "sound": ""
+    }
+   },
+   "webhook": {
+    "enabled": false,
+    "types": 0,
+    "options": {
+     "webhookUrl": "",
+     "jsonPayload": "IntcbiAgXCJub3RpZmljYXRpb25fdHlwZVwiOiBcInt7bm90aWZpY2F0aW9uX3R5cGV9fVwiLFxuICBcImV2ZW50XCI6IFwie3tldmVudH19XCIsXG4gIFwic3ViamVjdFwiOiBcInt7c3ViamVjdH19XCIsXG4gIFwibWVzc2FnZVwiOiBcInt7bWVzc2FnZX19XCIsXG4gIFwiaW1hZ2VcIjogXCJ7e2ltYWdlfX1cIixcbiAgXCJ7e21lZGlhfX1cIjoge1xuICAgIFwibWVkaWFfdHlwZVwiOiBcInt7bWVkaWFfdHlwZX19XCIsXG4gICAgXCJ0bWRiSWRcIjogXCJ7e21lZGlhX3RtZGJpZH19XCIsXG4gICAgXCJ0dmRiSWRcIjogXCJ7e21lZGlhX3R2ZGJpZH19XCIsXG4gICAgXCJzdGF0dXNcIjogXCJ7e21lZGlhX3N0YXR1c319XCIsXG4gICAgXCJzdGF0dXM0a1wiOiBcInt7bWVkaWFfc3RhdHVzNGt9fVwiXG4gIH0sXG4gIFwie3tyZXF1ZXN0fX1cIjoge1xuICAgIFwicmVxdWVzdF9pZFwiOiBcInt7cmVxdWVzdF9pZH19XCIsXG4gICAgXCJyZXF1ZXN0ZWRCeV9lbWFpbFwiOiBcInt7cmVxdWVzdGVkQnlfZW1haWx9fVwiLFxuICAgIFwicmVxdWVzdGVkQnlfdXNlcm5hbWVcIjogXCJ7e3JlcXVlc3RlZEJ5X3VzZXJuYW1lfX1cIixcbiAgICBcInJlcXVlc3RlZEJ5X2F2YXRhclwiOiBcInt7cmVxdWVzdGVkQnlfYXZhdGFyfX1cIixcbiAgICBcInJlcXVlc3RlZEJ5X3NldHRpbmdzX2Rpc2NvcmRJZFwiOiBcInt7cmVxdWVzdGVkQnlfc2V0dGluZ3NfZGlzY29yZElkfX1cIixcbiAgICBcInJlcXVlc3RlZEJ5X3NldHRpbmdzX3RlbGVncmFtQ2hhdElkXCI6IFwie3tyZXF1ZXN0ZWRCeV9zZXR0aW5nc190ZWxlZ3JhbUNoYXRJZH19XCJcbiAgfSxcbiAgXCJ7e2lzc3VlfX1cIjoge1xuICAgIFwiaXNzdWVfaWRcIjogXCJ7e2lzc3VlX2lkfX1cIixcbiAgICBcImlzc3VlX3R5cGVcIjogXCJ7e2lzc3VlX3R5cGV9fVwiLFxuICAgIFwiaXNzdWVfc3RhdHVzXCI6IFwie3tpc3N1ZV9zdGF0dXN9fVwiLFxuICAgIFwicmVwb3J0ZWRCeV9lbWFpbFwiOiBcInt7cmVwb3J0ZWRCeV9lbWFpbH19XCIsXG4gICAgXCJyZXBvcnRlZEJ5X3VzZXJuYW1lXCI6IFwie3tyZXBvcnRlZEJ5X3VzZXJuYW1lfX1cIixcbiAgICBcInJlcG9ydGVkQnlfYXZhdGFyXCI6IFwie3tyZXBvcnRlZEJ5X2F2YXRhcn19XCIsXG4gICAgXCJyZXBvcnRlZEJ5X3NldHRpbmdzX2Rpc2NvcmRJZFwiOiBcInt7cmVwb3J0ZWRCeV9zZXR0aW5nc19kaXNjb3JkSWR9fVwiLFxuICAgIFwicmVwb3J0ZWRCeV9zZXR0aW5nc190ZWxlZ3JhbUNoYXRJZFwiOiBcInt7cmVwb3J0ZWRCeV9zZXR0aW5nc190ZWxlZ3JhbUNoYXRJZH19XCJcbiAgfSxcbiAgXCJ7e2NvbW1lbnR9fVwiOiB7XG4gICAgXCJjb21tZW50X21lc3NhZ2VcIjogXCJ7e2NvbW1lbnRfbWVzc2FnZX19XCIsXG4gICAgXCJjb21tZW50ZWRCeV9lbWFpbFwiOiBcInt7Y29tbWVudGVkQnlfZW1haWx9fVwiLFxuICAgIFwiY29tbWVudGVkQnlfdXNlcm5hbWVcIjogXCJ7e2NvbW1lbnRlZEJ5X3VzZXJuYW1lfX1cIixcbiAgICBcImNvbW1lbnRlZEJ5X2F2YXRhclwiOiBcInt7Y29tbWVudGVkQnlfYXZhdGFyfX1cIixcbiAgICBcImNvbW1lbnRlZEJ5X3NldHRpbmdzX2Rpc2NvcmRJZFwiOiBcInt7Y29tbWVudGVkQnlfc2V0dGluZ3NfZGlzY29yZElkfX1cIixcbiAgICBcImNvbW1lbnRlZEJ5X3NldHRpbmdzX3RlbGVncmFtQ2hhdElkXCI6IFwie3tjb21tZW50ZWRCeV9zZXR0aW5nc190ZWxlZ3JhbUNoYXRJZH19XCJcbiAgfSxcbiAgXCJ7e2V4dHJhfX1cIjogW11cbn0i"
+    }
+   },
+   "webpush": {
+    "enabled": true,
+    "options": {}
+   },
+   "gotify": {
+    "enabled": false,
+    "types": 0,
+    "options": {
+     "url": "",
+     "token": "",
+     "priority": 0
+    }
+   },
+   "ntfy": {
+    "enabled": true,
+    "types": 3866,
+    "options": {
+     "url": "http://ntfy",
+     "topic": "jellyseerr"
+    }
+   }
+  }
+ },
+ "jobs": {
+  "plex-recently-added-scan": {
+   "schedule": "0 */5 * * * *"
+  },
+  "plex-full-scan": {
+   "schedule": "0 0 3 * * *"
+  },
+  "plex-watchlist-sync": {
+   "schedule": "0 */3 * * * *"
+  },
+  "plex-refresh-token": {
+   "schedule": "0 0 5 * * *"
+  },
+  "radarr-scan": {
+   "schedule": "0 0 4 * * *"
+  },
+  "sonarr-scan": {
+   "schedule": "0 30 4 * * *"
+  },
+  "availability-sync": {
+   "schedule": "0 0 5 * * *"
+  },
+  "download-sync": {
+   "schedule": "0 * * * * *"
+  },
+  "download-sync-reset": {
+   "schedule": "0 0 1 * * *"
+  },
+  "jellyfin-recently-added-scan": {
+   "schedule": "0 */5 * * * *"
+  },
+  "jellyfin-full-scan": {
+   "schedule": "0 0 3 * * *"
+  },
+  "image-cache-cleanup": {
+   "schedule": "0 0 5 * * *"
+  },
+  "process-blacklisted-tags": {
+   "schedule": "0 30 1 */7 * *"
+  }
+ },
+ "network": {
+  "csrfProtection": false,
+  "forceIpv4First": false,
+  "trustProxy": false,
+  "proxy": {
+   "enabled": false,
+   "hostname": "",
+   "port": 8080,
+   "useSsl": false,
+   "user": "",
+   "password": "",
+   "bypassFilter": "",
+   "bypassLocalAddresses": true
+  }
+ }
+}
