@@ -85,6 +85,8 @@ services:
       TZ: ${TZ}
     volumes:
       - ./recyclarr/config:/config
+    networks:
+      - homelab
 
   prowlarr:
     image: lscr.io/linuxserver/prowlarr
@@ -201,7 +203,8 @@ services:
       - ./jellyfin/config:/config
       - media:/data/media
     ports:
-      - 8096:8096
+      - 127.0.0.1:8096:8096 # Internal + Tailscale
+      - ${HOMELAB_LAN_IP}:8096:8096 # From LAN
     networks:
       - homelab
     labels:
@@ -264,4 +267,3 @@ volumes:
 networks:
   homelab:
     name: homelab
-    external: true
