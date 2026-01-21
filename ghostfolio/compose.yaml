@@ -30,7 +30,7 @@ services:
       homepage.href: https://${TAILSCALE_MACHINE}.${TAILSCALE_TAILNET}:3333
       homepage.description: Wealth manager
       homepage.widget.type: ghostfolio
-      homepage.widget.url: https://${TAILSCALE_MACHINE}.${TAILSCALE_TAILNET}:3333
+      homepage.widget.url: http://ghostfolio:3333
       homepage.widget.key: ${GHOSTFOLIO_TOKEN}
 
   postgres:
