@@ -1,0 +1,20 @@
+[project]
+name = "analyze-ghostfolio"
+version = "0.1.0"
+description = "Analyzes Ghostfolio portfolio with AI"
+readme = "README.md"
+authors = [{ name = "Gontzal Monasterio", email = "go.monasterio@gmail.com" }]
+requires-python = ">=3.14"
+dependencies = [
+    "ghostfolio>=0.8.0",
+    "httpx>=0.28.1",
+    "litellm>=1.81.1",
+    "python-dotenv>=1.2.1",
+]
+
+[project.scripts]
+analyze-ghostfolio = "analyze_ghostfolio:main"
+
+[build-system]
+requires = ["uv_build>=0.9.26,<0.10.0"]
+build-backend = "uv_build"

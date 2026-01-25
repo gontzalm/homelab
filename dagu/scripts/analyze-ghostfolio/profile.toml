@@ -1,0 +1,14 @@
+[identity]
+birth_year = 1995
+life_stage = "Accumulation phase"
+profession = "Tech-savvy | Data Engineer | Applied AI Engineer"
+
+[philosophy]
+objective = "Maximum long-term growth (Fire & Forget), FIRE philosophy"
+strategy = "DCA, passive maganement"
+time_horizon_years = 25
+forbidden_actions = "Do not suggest hedging with bonds, selling for short-term liquidity, or active day-trading strategies"
+
+[risk-tolerance]
+volatility = "Very high, comfortable with -40% drawdowns in the short term as long as the fundamental thesis remains intact"
+psychology = "Diamond hands, does not panic sell"
