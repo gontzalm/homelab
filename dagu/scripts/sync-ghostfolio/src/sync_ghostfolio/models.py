@@ -1,14 +1,15 @@
-from typing import NotRequired, TypedDict
+from typing import NotRequired, Protocol, TypedDict
 
 
 class GhostfolioConfig(TypedDict):
     host: str
-    ntfy_topic: str
+    ntfy_topic: NotRequired[str]
 
 
 class GeneralCryptoConfig(TypedDict):
-    proxy_url: str
-    mempool_url: str
+    proxy_url: NotRequired[str]
+    mempool_url: NotRequired[str]
+    tx_delay_days: NotRequired[int]
 
 
 class PlatformConfig(TypedDict):
@@ -24,7 +25,6 @@ class Freedom24Config(PlatformConfig):
 
 
 class CryptoConfig(PlatformConfig):
-    proxy_url: str
     coins: list[str]
 
 
@@ -38,3 +38,7 @@ class Config(TypedDict):
     ghostfolio: GhostfolioConfig
     crypto: GeneralCryptoConfig
     users: dict[str, UserPlatforms]
+
+
+class Synchronizer(Protocol):
+    def sync(self) -> None: ...

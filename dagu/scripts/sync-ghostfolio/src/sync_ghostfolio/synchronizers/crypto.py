@@ -1,6 +1,6 @@
 import logging
 from abc import ABC, abstractmethod
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
 from functools import cache, cached_property
 from typing import Any, ClassVar, Generic, Protocol, TypeVar, final, override
@@ -17,7 +17,14 @@ from bip_utils.bip.bip84.bip84 import (  # pyright: ignore[reportMissingTypeStub
 from ghostfolio import Ghostfolio  # pyright: ignore[reportMissingTypeStubs]
 
 from ._base import PlatformSynchronizer
-from ._models import BtcTx, CryptoTx, EthTx, GhostfolioActivity
+from ._models import (
+    ActivityType,
+    BtcTx,
+    CryptoTx,
+    DataSource,
+    EthTx,
+    GhostfolioActivity,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -26,10 +33,12 @@ T = TypeVar("T", bound=CryptoTx)
 
 
 class CryptoConfig(Protocol):
+    _DEFAULT_PROVIDER_URL: ClassVar[str]
     COINGECKO_COIN_ID: ClassVar[str]
     PROVIDER_API_PATH: ClassVar[str]
     provider_url: str
     proxy_url: str | None
+    tx_delay_days: int | None
 
     @property
     def coingecko_api_key(self) -> str: ...
@@ -68,23 +77,29 @@ class CryptoSynchronizer(PlatformSynchronizer, CryptoConfig, ABC, Generic[T]):
 
     @override
     def _get_new_activities(self) -> list[GhostfolioActivity]:
-        activities: list[GhostfolioActivity] = [
+        return [
             {
                 "accountId": self._ghostfolio_account_id,
                 "comment": self._ID_COMMENT_PREFIX + tx["id"],
                 "currency": "USD",
-                "dataSource": "COINGECKO",
+                "dataSource": DataSource["COINGECKO"],
                 "date": tx["executed_at"].isoformat(),
                 "fee": float(tx["fee"])
-                * self._get_coin_price(tx["executed_at"].date()),
+                * self._get_coin_price(
+                    tx["executed_at"].date() - timedelta(days=self.tx_delay_days or 0)
+                ),
                 "quantity": float(abs(tx["value"])),
                 "symbol": self.COINGECKO_COIN_ID,
-                "type": "BUY" if tx["value"] > 0 else "SELL",
-                "unitPrice": self._get_coin_price(tx["executed_at"].date()),
+                "type": ActivityType["BUY"]
+                if tx["value"] > 0
+                else ActivityType["SELL"],
+                "unitPrice": self._get_coin_price(
+                    tx["executed_at"].date() - timedelta(days=self.tx_delay_days or 0)
+                ),
             }
             for tx in self._get_transactions()
+            if not self._activity_exists(self._ID_COMMENT_PREFIX + tx["id"])
         ]
-        return [a for a in activities if not self._activity_exists(a)]
 
     @override
     def _get_cash_balance(self) -> None:
@@ -108,6 +123,7 @@ class BtcSynchronizer(CryptoSynchronizer[BtcTx]):
         ntfy_topic: str | None = None,
         provider_url: str | None = None,
         proxy_url: str | None = None,
+        tx_delay_days: int | None = None,
     ) -> None:
         super().__init__(
             ghostfolio_client, ghostfolio_account_id, ntfy_topic=ntfy_topic
@@ -116,6 +132,7 @@ class BtcSynchronizer(CryptoSynchronizer[BtcTx]):
         self._zpub = zpub
         self.provider_url = provider_url or self._DEFAULT_PROVIDER_URL
         self.proxy_url = proxy_url
+        self.tx_delay_days = tx_delay_days
 
     @property
     @override
@@ -225,6 +242,7 @@ class EthSynchronizer(CryptoSynchronizer[EthTx]):
         ntfy_topic: str | None = None,
         provider_url: str | None = None,
         proxy_url: str | None = None,
+        tx_delay_days: int | None = None,
     ) -> None:
         super().__init__(
             ghostfolio_client, ghostfolio_account_id, ntfy_topic=ntfy_topic
@@ -233,6 +251,7 @@ class EthSynchronizer(CryptoSynchronizer[EthTx]):
         self._address = address
         self.provider_url = provider_url or self._DEFAULT_PROVIDER_URL
         self.proxy_url = proxy_url
+        self.tx_delay_days = tx_delay_days
 
     @property
     @override

@@ -5,6 +5,7 @@ ntfy_topic = "http://ntfy/dagu"
 [crypto]
 proxy_url = "socks5h://tor-proxy:9050"
 mempool_url = "http://mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion"
+tx_delay_days = 7
 
 [users.gontz.indexa_capital]
 account_number = "9AQ2W14Z"

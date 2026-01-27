@@ -1,1 +1,3 @@
-from .main import main  # pyright: ignore[reportUnusedImport]
+__all__ = ["main"]
+
+from .main import main

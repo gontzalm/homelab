@@ -6,7 +6,8 @@ from functools import cached_property
 import httpx
 from ghostfolio import Ghostfolio  # pyright: ignore[reportMissingTypeStubs]
 
-from ._models import GhostfolioAccount, GhostfolioActivity
+from ._models import ActivityType, GhostfolioAccount, GhostfolioActivity
+from ._notifications import NOTIFICATION_TEMPLATE
 
 logger = logging.getLogger(__name__)
 
@@ -49,10 +50,9 @@ class PlatformSynchronizer(ABC):
                 f"Ghostfolio account with ID '{self._ghostfolio_account_id}' does not exist"
             )
 
-    def _activity_exists(self, activity: GhostfolioActivity) -> bool:
+    def _activity_exists(self, activity_comment: str) -> bool:
         return (
-            activity["comment"].removeprefix(self._ID_COMMENT_PREFIX)  # pyright: ignore[reportTypedDictNotRequiredAccess]
-            in self._existing_ids
+            activity_comment.removeprefix(self._ID_COMMENT_PREFIX) in self._existing_ids
         )
 
     @abstractmethod
@@ -85,7 +85,9 @@ class PlatformSynchronizer(ABC):
                         "Title": f"New Ghostfolio Activity in {self._account['name']}",
                         "Tags": "chart",
                     },
-                    content=f"{activity['date']} -> {activity['type']} {activity['quantity']} {activity['symbol']} at {activity['unitPrice']} {activity['currency']}".encode(),
+                    content=NOTIFICATION_TEMPLATE[ActivityType(activity["type"])]
+                    .substitute(activity)
+                    .encode(),
                 )
                 _ = r.raise_for_status()
 

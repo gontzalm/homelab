@@ -5,7 +5,7 @@ import httpx
 from ghostfolio import Ghostfolio  # pyright: ignore[reportMissingTypeStubs]
 
 from ._base import PlatformSynchronizer
-from ._models import GhostfolioActivity
+from ._models import ActivityType, DataSource, GhostfolioActivity
 
 logger = logging.getLogger(__name__)
 
@@ -50,14 +50,14 @@ class IndexaCapitalSynchronizer(PlatformSynchronizer):
                 "accountId": self._ghostfolio_account_id,
                 "comment": self._ID_COMMENT_PREFIX + transaction["reference"],
                 "currency": transaction["currency"],
-                "dataSource": "YAHOO",
-                "date": transaction["executed_at"].partition(" ")[0],  # pyright: ignore[reportAny]  # pyright: ignore[reportAny]
+                "dataSource": DataSource["YAHOO"],
+                "date": transaction["executed_at"].partition(" ")[0],  # pyright: ignore[reportAny]
                 "fee": 0,
                 "quantity": transaction["titles"],
                 "symbol": transaction["instrument"]["isin_code"],
-                "type": "BUY"
+                "type": ActivityType["BUY"]
                 if transaction["operation_type"] in self.OPERATIONS["buy"]
-                else "SELL",
+                else ActivityType["SELL"],
                 "unitPrice": transaction["price"],
             }
             for transaction in r.json()  # pyright: ignore[reportAny]
@@ -73,14 +73,14 @@ class IndexaCapitalSynchronizer(PlatformSynchronizer):
                 "accountId": self._ghostfolio_account_id,
                 "comment": self._ID_COMMENT_PREFIX + transaction["reference"],
                 "currency": transaction["currency"],
-                "dataSource": "MANUAL",
+                "dataSource": DataSource["MANUAL"],
                 "date": transaction["date"],
                 "fee": abs(transaction["amount"]),  # pyright: ignore[reportAny]
                 "quantity": 0,
                 "symbol": "INDEXA_CUST_FEE"
                 if "CUSTODIA" in transaction["operation_type"]
                 else "INDEXA_MGMT_FEE",
-                "type": "FEE",
+                "type": ActivityType["FEE"],
                 "unitPrice": 0,
             }
             for transaction in r.json()  # pyright: ignore[reportAny]
@@ -90,7 +90,7 @@ class IndexaCapitalSynchronizer(PlatformSynchronizer):
     @override
     def _get_new_activities(self) -> list[GhostfolioActivity]:
         activities = [*self._get_instrument_transactions(), *self._get_fees()]
-        return [a for a in activities if not self._activity_exists(a)]
+        return [a for a in activities if not self._activity_exists(a["comment"])]  # pyright: ignore[reportTypedDictNotRequiredAccess]
 
     @override
     def _get_cash_balance(self) -> float:

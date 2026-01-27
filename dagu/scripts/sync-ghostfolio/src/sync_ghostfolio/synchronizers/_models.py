@@ -1,6 +1,23 @@
 from datetime import datetime
 from decimal import Decimal
+from enum import StrEnum
 from typing import NotRequired, TypedDict
+
+
+class DataSource(StrEnum):
+    COINGECKO = "COINGECKO"
+    GHOSTFOLIO = "GHOSTFOLIO"
+    MANUAL = "MANUAL"
+    YAHOO = "YAHOO"
+
+
+class ActivityType(StrEnum):
+    BUY = "BUY"
+    SELL = "SELL"
+    DIVIDEND = "DIVIDEND"
+    FEE = "FEE"
+    INTEREST = "INTEREST"
+    LIABILITY = "LIABILITY"
 
 
 # See https://github.com/ghostfolio/ghostfolio?tab=readme-ov-file#import-activities
@@ -8,12 +25,12 @@ class GhostfolioActivity(TypedDict):
     accountId: NotRequired[str]  # Id of the account
     comment: NotRequired[str]  # Comment of the activity
     currency: str
-    dataSource: str  # COINGECKO | GHOSTFOLIO 1 | MANUAL | YAHOO
+    dataSource: DataSource
     date: str
     fee: float
     quantity: float
     symbol: str  # Symbol of the activity (suitable for `dataSource`)
-    type: str  # BUY | DIVIDEND | FEE | INTEREST | LIABILITY | SELL
+    type: ActivityType
     unitPrice: float
 
 
