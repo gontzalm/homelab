@@ -30,6 +30,7 @@ class CryptoConfig(PlatformConfig):
 
 class UserPlatforms(TypedDict):
     indexa_capital: NotRequired[IndexaCapitalConfig]
+    indexa_capital_pension: NotRequired[IndexaCapitalConfig]
     freedom24: NotRequired[Freedom24Config]
     crypto: NotRequired[CryptoConfig]
 

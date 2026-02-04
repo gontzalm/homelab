@@ -1,6 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
-from enum import StrEnum
+from enum import Enum, StrEnum
 from typing import NotRequired, TypedDict
 
 
@@ -59,6 +59,16 @@ class GhostfolioAccount(TypedDict):
     allocationInPercentage: float
     balanceInBaseCurrency: float
     value: float
+
+
+class IndexaFee(Enum):
+    GF_INDEXA_CUST_FEE = "Indexa Custody Fee"
+    GF_INDEXA_MGMT_FEE = "Indexa Management Fee"
+
+
+class IndexaPensionFund(Enum):
+    GF_INDEXA_PENSION_FI = "Indexa Más Rentabilidad Bonos"
+    GF_INDEXA_PENSION_EQ = "Indexa Más Rentabilidad Acciones"
 
 
 class CryptoTx(TypedDict):

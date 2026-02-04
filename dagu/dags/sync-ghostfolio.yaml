@@ -14,5 +14,5 @@ steps:
 handlerOn:
   failure:
     command: >-
-      curl -H "Title: Dagu Worker" -H "Tags: warning,skull" -d "sync-ghostfolio
-      DAG failed" ntfy/dagu
+      curl -H "Title: Dagu Worker" -H "Tags: warning,skull" -d "${DAG_NAME} DAG
+      ${DAG_RUN_STATUS}" ntfy/dagu

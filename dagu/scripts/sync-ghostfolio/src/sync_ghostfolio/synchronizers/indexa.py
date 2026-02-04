@@ -1,11 +1,17 @@
 import logging
-from typing import final, override
+from typing import Literal, final, override
 
 import httpx
-from ghostfolio import Ghostfolio  # pyright: ignore[reportMissingTypeStubs]
+from ghostfolio import Ghostfolio
 
 from ._base import PlatformSynchronizer
-from ._models import ActivityType, DataSource, GhostfolioActivity
+from ._models import (
+    ActivityType,
+    DataSource,
+    GhostfolioActivity,
+    IndexaFee,
+    IndexaPensionFund,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +20,11 @@ logger = logging.getLogger(__name__)
 class IndexaCapitalSynchronizer(PlatformSynchronizer):
     BASE_URL = "https://api.indexacapital.com"
     OPERATIONS = {
-        "buy": ("ALTA IIC SWITCH", "SUSCRIPCIÓN FONDOS INVERSIÓN"),
+        "buy": (
+            "ALTA IIC SWITCH",
+            "SUSCRIPCIÓN FONDOS INVERSIÓN",
+            "APORTACION A PLAN DE PENSIONES",
+        ),
         "sell": ("BAJA IIC SWITCH", "REEMBOLSO FONDOS INVERSIÓN"),
         "fee": ("CUSTODIA INVERSIS", "CARGO COMISION GESTION"),
     }
@@ -26,6 +36,7 @@ class IndexaCapitalSynchronizer(PlatformSynchronizer):
         indexa_capital_api_key: str,
         indexa_capital_account_number: str,
         *,
+        account_type: Literal["mutual", "pension"] = "mutual",
         ntfy_topic: str | None = None,
     ) -> None:
         super().__init__(
@@ -36,6 +47,7 @@ class IndexaCapitalSynchronizer(PlatformSynchronizer):
             base_url=f"{self.BASE_URL}/accounts/{self._account_number}",
             headers={"X-AUTH-TOKEN": indexa_capital_api_key},
         )
+        self.account_type = account_type
 
     def _get_instrument_transactions(self) -> list[GhostfolioActivity]:
         logger.info(
@@ -50,20 +62,27 @@ class IndexaCapitalSynchronizer(PlatformSynchronizer):
                 "accountId": self._ghostfolio_account_id,
                 "comment": self._ID_COMMENT_PREFIX + transaction["reference"],
                 "currency": transaction["currency"],
-                "dataSource": DataSource["YAHOO"],
-                "date": transaction["executed_at"].partition(" ")[0],  # pyright: ignore[reportAny]
+                "dataSource": DataSource["YAHOO"]
+                if self.account_type == "mutual"
+                else DataSource["MANUAL"],
+                "date": transaction["executed_at"].partition(" ")[0],
                 "fee": 0,
                 "quantity": transaction["titles"],
-                "symbol": transaction["instrument"]["isin_code"],
+                "symbol": transaction["instrument"]["isin_code"]
+                if self.account_type == "mutual"
+                else IndexaPensionFund(transaction["instrument"]["name"]).name,
                 "type": ActivityType["BUY"]
                 if transaction["operation_type"] in self.OPERATIONS["buy"]
                 else ActivityType["SELL"],
                 "unitPrice": transaction["price"],
             }
-            for transaction in r.json()  # pyright: ignore[reportAny]
+            for transaction in r.json()
         ]
 
     def _get_fees(self) -> list[GhostfolioActivity]:
+        if self.account_type == "pension":
+            return []
+
         logger.info("Retrieving fees for account number '%s'", self._account_number)
         r = self._indexa.get("/cash-transactions")
         _ = r.raise_for_status()
@@ -75,29 +94,53 @@ class IndexaCapitalSynchronizer(PlatformSynchronizer):
                 "currency": transaction["currency"],
                 "dataSource": DataSource["MANUAL"],
                 "date": transaction["date"],
-                "fee": abs(transaction["amount"]),  # pyright: ignore[reportAny]
+                "fee": abs(transaction["amount"]),
                 "quantity": 0,
-                "symbol": "INDEXA_CUST_FEE"
+                "symbol": IndexaFee.GF_INDEXA_CUST_FEE.name
                 if "CUSTODIA" in transaction["operation_type"]
-                else "INDEXA_MGMT_FEE",
+                else IndexaFee.GF_INDEXA_MGMT_FEE.name,
                 "type": ActivityType["FEE"],
                 "unitPrice": 0,
             }
-            for transaction in r.json()  # pyright: ignore[reportAny]
+            for transaction in r.json()
             if transaction["operation_type"] in self.OPERATIONS["fee"]
         ]
 
     @override
-    def _get_new_activities(self) -> list[GhostfolioActivity]:
-        activities = [*self._get_instrument_transactions(), *self._get_fees()]
-        return [a for a in activities if not self._activity_exists(a["comment"])]  # pyright: ignore[reportTypedDictNotRequiredAccess]
+    def _post_actions(self) -> None:
+        if self.account_type != "pension":
+            return
+
+        # Update Pension Funds Net Asset Value (NAV)
+        r = self._indexa.get("/portfolio")
+        r.raise_for_status()
+        positions = r.json()["instrument_accounts"][0]["positions"]
+
+        for position in positions:
+            self._ghostfolio.post(
+                "market-data",
+                object_id=f"MANUAL/{IndexaPensionFund(position['instrument']['name']).name}",
+                data={
+                    "marketData": [
+                        {"date": position["date"], "marketPrice": position["price"]}
+                    ]
+                },
+            )
 
     @override
-    def _get_cash_balance(self) -> float:
+    def _get_new_activities(self) -> list[GhostfolioActivity]:
+        activities = [*self._get_instrument_transactions(), *self._get_fees()]
+        return [a for a in activities if not self._activity_exists(a["comment"])]
+
+    @override
+    def _get_cash_balance(self) -> float | None:
+        if self.account_type == "pension":
+            return None
+
         logger.info(
             "Retrieving cash balance for account number '%s'", self._account_number
         )
         r = self._indexa.get("/portfolio")
         _ = r.raise_for_status()
 
-        return r.json()["portfolio"]["cash_amount"]  # pyright: ignore[reportAny]
+        return r.json()["portfolio"]["cash_amount"]

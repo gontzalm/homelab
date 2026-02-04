@@ -6,15 +6,9 @@ from functools import cache, cached_property
 from typing import Any, ClassVar, Generic, Protocol, TypeVar, final, override
 
 import httpx
-from bip_utils import (  # pyright: ignore[reportMissingTypeStubs]
-    Bip44Changes,
-    Bip84,
-    Bip84Coins,
-)
-from bip_utils.bip.bip84.bip84 import (  # pyright: ignore[reportMissingTypeStubs]
-    Bip44Base,
-)
-from ghostfolio import Ghostfolio  # pyright: ignore[reportMissingTypeStubs]
+from bip_utils import Bip44Changes, Bip84, Bip84Coins
+from bip_utils.bip.bip84.bip84 import Bip44Base
+from ghostfolio import Ghostfolio
 
 from ._base import PlatformSynchronizer
 from ._models import (
@@ -69,7 +63,7 @@ class CryptoSynchronizer(PlatformSynchronizer, CryptoConfig, ABC, Generic[T]):
             params={"date": date.isoformat(), "localization": False},
         )
         _ = r.raise_for_status()
-        return r.json()["market_data"]["current_price"]["usd"]  # pyright: ignore[reportAny]
+        return r.json()["market_data"]["current_price"]["usd"]
 
     @abstractmethod
     def _get_transactions(self) -> list[T]:
@@ -156,16 +150,16 @@ class BtcSynchronizer(CryptoSynchronizer[BtcTx]):
             .ToAddress()
         )
 
-    def _compute_tx_net_sats_value(self, tx: dict[str, Any], addr: str) -> int:  # pyright: ignore[reportExplicitAny]
+    def _compute_tx_net_sats_value(self, tx: dict[str, Any], addr: str) -> int:
         value = 0
 
-        for vout in tx["vout"]:  # pyright: ignore[reportAny]
+        for vout in tx["vout"]:
             if vout["scriptpubkey_address"] == addr:
-                value += vout["value"]  # pyright: ignore[reportAny]
+                value += vout["value"]
 
-        for vin in tx["vin"]:  # pyright: ignore[reportAny]
+        for vin in tx["vin"]:
             if vin["prevout"]["scriptpubkey_address"] == addr:
-                value -= vin["prevout"]["value"]  # pyright: ignore[reportAny]
+                value -= vin["prevout"]["value"]
 
         return value
 
@@ -182,20 +176,20 @@ class BtcSynchronizer(CryptoSynchronizer[BtcTx]):
             r = self._http.get(f"/address/{addr}/txs/chain")
             _ = r.raise_for_status()
 
-            txs = r.json()  # pyright: ignore[reportAny]
+            txs = r.json()
 
             if txs:
                 consecutive_empty = 0
-                for tx in txs:  # pyright: ignore[reportAny]
+                for tx in txs:
                     transactions.append(
                         {
                             "id": tx["txid"],
                             "value": self._sats_to_btc(
-                                self._compute_tx_net_sats_value(tx, addr)  # pyright: ignore[reportAny]
+                                self._compute_tx_net_sats_value(tx, addr)
                             ),
                             "fee": Decimal(0),
                             "executed_at": datetime.fromtimestamp(
-                                tx["status"]["block_time"],  # pyright: ignore[reportAny]
+                                tx["status"]["block_time"],
                                 tz=UTC,
                             ),
                             "address": addr,
@@ -265,7 +259,7 @@ class EthSynchronizer(CryptoSynchronizer[EthTx]):
     @override
     def _get_transactions(self) -> list[EthTx]:
         logger.info("Retrieving ETH transactions")
-        txs: list[dict[str, Any]] = []  # pyright: ignore[reportExplicitAny]
+        txs: list[dict[str, Any]] = []
         next_page_params = None
 
         while True:
@@ -274,19 +268,19 @@ class EthSynchronizer(CryptoSynchronizer[EthTx]):
             )
             _ = r.raise_for_status()
 
-            data = r.json()  # pyright: ignore[reportAny]
-            txs.extend(data["items"])  # pyright: ignore[reportAny]
-            next_page_params = data["next_page_params"]  # pyright: ignore[reportAny]
+            data = r.json()
+            txs.extend(data["items"])
+            next_page_params = data["next_page_params"]
             if next_page_params is None:
                 break
 
         return [
             {
                 "id": tx["hash"],
-                "value": self._wei_to_eth(int(tx["value"]))  # pyright: ignore[reportAny]
+                "value": self._wei_to_eth(int(tx["value"]))
                 * (-1 if tx["from"]["hash"] == self._address else 1),
-                "fee": self._wei_to_eth(tx["fee"]["value"]),  # pyright: ignore[reportAny]
-                "executed_at": datetime.fromisoformat(tx["timestamp"]),  # pyright: ignore[reportAny]
+                "fee": self._wei_to_eth(tx["fee"]["value"]),
+                "executed_at": datetime.fromisoformat(tx["timestamp"]),
                 "block": tx["block_number"],
             }
             for tx in txs

@@ -11,6 +11,10 @@ tx_delay_days = 7
 account_number = "9AQ2W14Z"
 ghostfolio_account_id = "6b006d67-3039-4bb7-b99d-b26af971f673"
 
+[users.gontz.indexa_capital_pension]
+account_number = "2MU7WSGP"
+ghostfolio_account_id = "3f3815e3-c632-453d-a2aa-bcb8b003d466"
+
 [users.gontz.freedom24]
 ghostfolio_account_id = "76e074e0-d945-49e3-be89-2ec68c99ab16"
 

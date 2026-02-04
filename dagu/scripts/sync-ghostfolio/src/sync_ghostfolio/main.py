@@ -4,7 +4,7 @@ import tomllib
 from pathlib import Path
 
 from dotenv import dotenv_values
-from ghostfolio import Ghostfolio  # pyright: ignore[reportMissingTypeStubs]
+from ghostfolio import Ghostfolio
 
 from sync_ghostfolio.synchronizers.crypto import (
     BtcSynchronizer,
@@ -18,41 +18,48 @@ from .synchronizers.indexa import IndexaCapitalSynchronizer
 logging.basicConfig(level=logging.INFO)
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
-env: dict[str, str] = dotenv_values()  # pyright: ignore[reportAssignmentType]
+env: dict[str, str] = dotenv_values()  # ty:ignore[invalid-assignment]
 
 
-def main() -> None:
-    user = sys.argv[1]
-    config: Config = tomllib.loads(Path("config.toml").read_text())  # pyright: ignore[reportAssignmentType]
-    user_platforms = config["users"][user]
-
-    ghostfolio = Ghostfolio(
-        token=env[f"{user.upper()}_GHOSTFOLIO_TOKEN"],
-        host=config["ghostfolio"]["host"],
-    )
-
+def gather_synchronizers(
+    user: str, config: Config, ghostfolio: Ghostfolio
+) -> list[Synchronizer]:
     synchronizers: list[Synchronizer] = []
+    platforms = config["users"][user]
 
-    for platform in user_platforms:
+    for platform in platforms:
         match platform:
             case "indexa_capital":
-                indexa_config = user_platforms["indexa_capital"]  # pyright: ignore[reportTypedDictNotRequiredAccess]
+                platform_cfg = platforms["indexa_capital"]
                 synchronizers.append(
                     IndexaCapitalSynchronizer(
                         ghostfolio,
-                        indexa_config["ghostfolio_account_id"],
+                        platform_cfg["ghostfolio_account_id"],
                         env[f"{user.upper()}_INDEXA_CAPITAL_API_KEY"],
-                        indexa_config["account_number"],
+                        platform_cfg["account_number"],
+                        ntfy_topic=config["ghostfolio"].get("ntfy_topic"),
+                    )
+                )
+
+            case "indexa_capital_pension":
+                platform_cfg = platforms["indexa_capital_pension"]
+                synchronizers.append(
+                    IndexaCapitalSynchronizer(
+                        ghostfolio,
+                        platform_cfg["ghostfolio_account_id"],
+                        env[f"{user.upper()}_INDEXA_CAPITAL_API_KEY"],
+                        platform_cfg["account_number"],
+                        account_type="pension",
                         ntfy_topic=config["ghostfolio"].get("ntfy_topic"),
                     )
                 )
 
             case "freedom24":
-                f24_config = user_platforms["freedom24"]  # pyright: ignore[reportTypedDictNotRequiredAccess]
+                platform_cfg = platforms["freedom24"]
                 synchronizers.append(
                     Freedom24Synchronizer(
                         ghostfolio,
-                        f24_config["ghostfolio_account_id"],
+                        platform_cfg["ghostfolio_account_id"],
                         env[f"{user.upper()}_FREEDOM24_PUBLIC_KEY"],
                         env[f"{user.upper()}_FREEDOM24_PRIVATE_KEY"],
                         ntfy_topic=config["ghostfolio"].get("ntfy_topic"),
@@ -60,7 +67,7 @@ def main() -> None:
                 )
 
             case "crypto":
-                crypto_config = user_platforms["crypto"]  # pyright: ignore[reportTypedDictNotRequiredAccess]
+                crypto_config = platforms["crypto"]
                 for coin in crypto_config["coins"]:
                     match coin:
                         case "BTC":
@@ -96,5 +103,17 @@ def main() -> None:
             case _:
                 raise ValueError(f"Unsupported platform {platform}")
 
-        for synchronizer in synchronizers:
-            synchronizer.sync()
+    return synchronizers
+
+
+def main() -> None:
+    user = sys.argv[1]
+    config: Config = tomllib.loads(Path("config.toml").read_text())  # ty:ignore[invalid-assignment]
+
+    ghostfolio = Ghostfolio(
+        token=env[f"{user.upper()}_GHOSTFOLIO_TOKEN"],
+        host=config["ghostfolio"]["host"],
+    )
+
+    for synchronizer in gather_synchronizers(user, config, ghostfolio):
+        synchronizer.sync()

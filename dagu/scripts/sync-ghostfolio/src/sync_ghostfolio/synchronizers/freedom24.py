@@ -3,11 +3,11 @@ from datetime import date, timedelta
 from functools import cached_property
 from typing import final, override
 
-from ghostfolio import Ghostfolio  # pyright: ignore[reportMissingTypeStubs]
+from ghostfolio import Ghostfolio
 from tradernet import Tradernet
 
 from ._base import PlatformSynchronizer
-from ._models import GhostfolioActivity
+from ._models import ActivityType, DataSource, GhostfolioActivity
 
 logger = logging.getLogger(__name__)
 
@@ -51,24 +51,26 @@ class Freedom24Synchronizer(PlatformSynchronizer):
 
     def _get_trades(self) -> list[GhostfolioActivity]:
         logger.info("Retrieving trades from %s onwards", self._sync_from.isoformat())
-        trades = self._tradernet.get_trades_history(  # pyright: ignore[reportAny]
+        trades = self._tradernet.get_trades_history(
             start=self._sync_from, end=(date.today() - timedelta(days=1))
         )["trades"]["trade"]
 
         return [
             {
                 "accountId": self._ghostfolio_account_id,
-                "comment": self._ID_COMMENT_PREFIX + str(trade["id"]),  # pyright: ignore[reportAny]
+                "comment": self._ID_COMMENT_PREFIX + str(trade["id"]),
                 "currency": trade["curr_c"],
-                "dataSource": "YAHOO",
+                "dataSource": DataSource["YAHOO"],
                 "date": trade["date"] + "Z",
-                "fee": float(trade["commission"]),  # pyright: ignore[reportAny]
-                "quantity": float(trade["q"]),  # pyright: ignore[reportAny]
-                "symbol": self._convert_symbol_to_yahoo(trade["instr_nm"]),  # pyright: ignore[reportAny]
-                "type": "BUY" if int(trade["type"]) == self._BUY_TRADE_TYPE else "SELL",  # pyright: ignore[reportAny]
-                "unitPrice": float(trade["p"]),  # pyright: ignore[reportAny]
+                "fee": float(trade["commission"]),
+                "quantity": float(trade["q"]),
+                "symbol": self._convert_symbol_to_yahoo(trade["instr_nm"]),
+                "type": ActivityType["BUY"]
+                if int(trade["type"]) == self._BUY_TRADE_TYPE
+                else ActivityType["SELL"],
+                "unitPrice": float(trade["p"]),
             }
-            for trade in trades  # pyright: ignore[reportAny]
+            for trade in trades
             if trade["instr_nm"] not in self._IGNORE_INSTRUMENTS
         ]
 
@@ -79,9 +81,9 @@ class Freedom24Synchronizer(PlatformSynchronizer):
     @override
     def _get_cash_balance(self) -> float:
         logger.info("Retrieving main account cash balance")
-        accounts = self._tradernet.get_user_data()["OPQ"]["ps"]["acc"]  # pyright: ignore[reportAny]
-        return next(  # pyright: ignore[reportAny]
+        accounts = self._tradernet.get_user_data()["OPQ"]["ps"]["acc"]
+        return next(
             acc["s"]
-            for acc in accounts  # pyright: ignore[reportAny]
+            for acc in accounts
             if acc["curr"] == self._MAIN_CASH_ACCOUNT_CURRENCY
         )

@@ -4,7 +4,7 @@ from datetime import datetime
 from functools import cached_property
 
 import httpx
-from ghostfolio import Ghostfolio  # pyright: ignore[reportMissingTypeStubs]
+from ghostfolio import Ghostfolio
 
 from ._models import ActivityType, GhostfolioAccount, GhostfolioActivity
 from ._notifications import NOTIFICATION_TEMPLATE
@@ -28,12 +28,12 @@ class PlatformSynchronizer(ABC):
 
     @cached_property
     def _existing_ids(self) -> set[str]:
-        activities: list[GhostfolioActivity] = self._ghostfolio.orders(  # pyright: ignore[reportAny]
+        activities: list[GhostfolioActivity] = self._ghostfolio.orders(
             account_id=self._ghostfolio_account_id
         )["activities"]
 
         return set(
-            activity["comment"].removeprefix(self._ID_COMMENT_PREFIX)  # pyright: ignore[reportTypedDictNotRequiredAccess]
+            activity["comment"].removeprefix(self._ID_COMMENT_PREFIX)
             for activity in activities
         )
 
@@ -42,7 +42,7 @@ class PlatformSynchronizer(ABC):
         try:
             return next(
                 acc
-                for acc in self._ghostfolio.accounts()["accounts"]  # pyright: ignore[reportAny]
+                for acc in self._ghostfolio.accounts()["accounts"]
                 if acc["id"] == self._ghostfolio_account_id
             )
         except StopIteration:
@@ -55,6 +55,9 @@ class PlatformSynchronizer(ABC):
             activity_comment.removeprefix(self._ID_COMMENT_PREFIX) in self._existing_ids
         )
 
+    def _post_actions(self) -> None:
+        pass
+
     @abstractmethod
     def _get_new_activities(self) -> list[GhostfolioActivity]:
         raise NotImplementedError
@@ -64,7 +67,7 @@ class PlatformSynchronizer(ABC):
         raise NotImplementedError
 
     def _get_max_account_datetime(self) -> datetime:
-        activities: list[GhostfolioActivity] = self._ghostfolio.orders(  # pyright: ignore[reportAny]
+        activities: list[GhostfolioActivity] = self._ghostfolio.orders(
             account_id=self._ghostfolio_account_id
         )["activities"]
 
@@ -127,3 +130,4 @@ class PlatformSynchronizer(ABC):
     def sync(self) -> None:
         self._sync_activities()
         self._sync_cash_balance()
+        self._post_actions()
