@@ -1,15 +1,15 @@
-description: Syncs Ghostfolio with financial platforms
-schedule: "0 2 * * *"
+description: Analyze Ghostfolio portfolio with AI
+schedule: "0 20 * * sun"
 
 container:
   exec: dagu-python-worker
   working_dir: /scripts/${DAG_NAME}
   env:
-    UV_PROJECT_ENVIRONMENT: /.venvs/sync-ghostfolio
+    - UV_PROJECT_ENVIRONMENT: /.venvs/analyze-ghostfolio
 
 steps:
-  - name: sync-gontz
-    command: uv run sync-ghostfolio gontz
+  - name: analyze-portfolio
+    command: uv run analyze-ghostfolio
 
 handler_on:
   failure:

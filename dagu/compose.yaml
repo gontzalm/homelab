@@ -7,9 +7,8 @@ services:
     command: ["dagu", "start-all"]
     user: 0:0
     environment:
+      DAGU_AUTH_MODE: none
       DAGU_DAGS_DIR: /var/lib/dagu/dags
-      DAGU_AUTH_BASIC_USERNAME: admin
-      DAGU_AUTH_BASIC_PASSWORD: ${DAGU_AUTH_BASIC_PASSWORD}
       DAGU_TZ: ${TZ}
     volumes:
       - dagu-data:/var/lib/dagu
@@ -34,6 +33,8 @@ services:
     command: ["sleep", "infinity"]
     tty: true
     stdin_open: true
+    environment:
+      UV_CACHE_DIR: /.venvs/.uv-cache
     volumes:
       - ./scripts:/scripts
       - worker-venvs:/.venvs

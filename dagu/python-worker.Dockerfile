@@ -1,4 +1,4 @@
-FROM astral/uv:python3.14-bookworm-slim
+FROM astral/uv:trixie
 
 # Install build deps
 RUN apt update
