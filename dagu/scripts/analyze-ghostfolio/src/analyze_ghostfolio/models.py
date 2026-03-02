@@ -19,7 +19,7 @@ class GhostfolioHolding(TypedDict):
     grossPerformancePercent: float
     grossPerformancePercentWithCurrencyEffect: float
     grossPerformanceWithCurrencyEffect: float
-    holdings: list[dict[str, Any]]  # pyright: ignore[reportExplicitAny]
+    holdings: list[dict[str, Any]]
     investment: float
     marketPrice: float
     name: str
@@ -70,9 +70,6 @@ class PrivateGhostfolioHolding(TypedDict):
     dateOfFirstActivity: str
 
 
-from typing import List, Optional, TypedDict
-
-
 class GhostfolioPlatform(TypedDict):
     id: str
     name: str
@@ -110,6 +107,5 @@ class PrivateGhostfolioAccount(TypedDict):
     currency: str
     isExcluded: bool
     allocationInPercentage: float
-    transactionCount: int
     updatedAt: str
     platform: GhostfolioPlatform

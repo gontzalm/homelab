@@ -5,20 +5,17 @@ from datetime import date
 from functools import cached_property
 from pathlib import Path
 from string import Template
-from typing import Any, TypeVar, final
+from typing import TypeVar, final
 
 import httpx
 import litellm
-from ghostfolio import Ghostfolio  # pyright: ignore[reportMissingTypeStubs]
+from ghostfolio import Ghostfolio
 
-from .models import (
-    PrivateGhostfolioAccount,
-    PrivateGhostfolioHolding,
-)
+from .models import PrivateGhostfolioAccount, PrivateGhostfolioHolding
 
 logger = logging.getLogger(__name__)
 
-T = TypeVar("T", bound=dict[str, Any])  # pyright: ignore[reportExplicitAny]
+T = TypeVar("T")
 
 
 @final
@@ -40,21 +37,21 @@ class GhostfolioAnalyzer:
     def _get_private_info(self, info: str, private_fields: type[T]) -> list[T]:
         logger.info("Retrieving ghostfolio info '%s'", info)
 
-        data = getattr(self._ghostfolio, info)()[info]  # pyright: ignore[reportAny]
-        return [  # pyright: ignore[reportReturnType, reportUnknownVariableType]
-            {k: element[k] for k in private_fields.__required_keys__}  # pyright: ignore[reportUnknownMemberType, reportAttributeAccessIssue, reportUnknownVariableType]
-            for element in data  # pyright: ignore[reportAny]
-        ]
+        data = getattr(self._ghostfolio, info)()[info]
+        return [
+            {k: element[k] for k in private_fields.__required_keys__}  # ty:ignore[unresolved-attribute]
+            for element in data
+        ]  # ty:ignore[invalid-return-type]
 
     @cached_property
     def holdings(self) -> list[PrivateGhostfolioHolding]:
-        return self._get_private_info("holdings", PrivateGhostfolioHolding)  # pyright: ignore[reportUnknownVariableType, reportArgumentType]
+        return self._get_private_info("holdings", PrivateGhostfolioHolding)
 
     @cached_property
     def accounts(self) -> list[PrivateGhostfolioAccount]:
-        return self._get_private_info(  # pyright: ignore[reportUnknownVariableType]
+        return self._get_private_info(
             "accounts",
-            PrivateGhostfolioAccount,  # pyright: ignore[reportArgumentType]
+            PrivateGhostfolioAccount,
         )
 
     def analyze_portfolio(self) -> None:
@@ -74,10 +71,10 @@ class GhostfolioAnalyzer:
         print(prompt)
 
         logger.info("Requesting analysis from LLM (%s)...", self._model)
-        response = litellm.completion(  # pyright: ignore[reportUnknownMemberType]
+        response = litellm.completion(
             self._model, messages=[{"role": "user", "content": prompt}]
         )
-        analysis: str = response.choices[0].message.content  # pyright: ignore[reportUnknownMemberType, reportAttributeAccessIssue, reportUnknownVariableType, reportAssignmentType]
+        analysis: str = response.choices[0].message.content
 
         logger.info("Sending analysis to ntfy topic '%s'", self._ntfy_topic)
         with httpx.Client() as http:
