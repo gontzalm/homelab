@@ -15,8 +15,8 @@ ghostfolio_account_id = "6b006d67-3039-4bb7-b99d-b26af971f673"
 account_number = "2MU7WSGP"
 ghostfolio_account_id = "3f3815e3-c632-453d-a2aa-bcb8b003d466"
 
-[users.gontz.freedom24]
-ghostfolio_account_id = "76e074e0-d945-49e3-be89-2ec68c99ab16"
+# [users.gontz.freedom24]
+# ghostfolio_account_id = "76e074e0-d945-49e3-be89-2ec68c99ab16"
 
 [users.gontz.crypto]
 ghostfolio_account_id = "07d71290-c1f8-44d9-bd35-2d396ad2724a"
