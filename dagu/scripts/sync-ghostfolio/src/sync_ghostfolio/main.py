@@ -80,7 +80,6 @@ def gather_synchronizers(
                                     provider_url=config["crypto"].get("mempool_url"),
                                     proxy_url=config["crypto"].get("proxy_url"),
                                     ntfy_topic=config["ghostfolio"].get("ntfy_topic"),
-                                    tx_delay_days=config["crypto"].get("tx_delay_days"),
                                 )
                             )
 
@@ -93,7 +92,6 @@ def gather_synchronizers(
                                     env[f"{user.upper()}_ETH_ADDRESS"],
                                     proxy_url=config["crypto"].get("proxy_url"),
                                     ntfy_topic=config["ghostfolio"].get("ntfy_topic"),
-                                    tx_delay_days=config["crypto"].get("tx_delay_days"),
                                 )
                             )
 
