@@ -12,6 +12,7 @@ from ._models import (
     IndexaFee,
     IndexaPensionFund,
 )
+from ._utils import isin_to_yahoo
 
 logger = logging.getLogger(__name__)
 
@@ -68,7 +69,7 @@ class IndexaCapitalSynchronizer(PlatformSynchronizer):
                 "date": transaction["executed_at"].partition(" ")[0],
                 "fee": 0,
                 "quantity": transaction["titles"],
-                "symbol": transaction["instrument"]["isin_code"]
+                "symbol": isin_to_yahoo(transaction["instrument"]["isin_code"])
                 if self.account_type == "mutual"
                 else IndexaPensionFund(transaction["instrument"]["name"]).name,
                 "type": ActivityType["BUY"]
