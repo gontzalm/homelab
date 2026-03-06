@@ -1,0 +1,2 @@
+[env]
+UV_PROJECT_ENVIRONMENT = "/home/gontz/homelab-venvs/analyze-ghostfolio"
