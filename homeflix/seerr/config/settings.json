@@ -1,13 +1,13 @@
 {
- "clientId": "2f28a3f5-b8c2-4e8d-9c8b-403af7af705d",
- "vapidPrivate": "SZhD8jV8SIbZG5OhVkZED5Hh6xmWHDIlF3ki34KfAD8",
- "vapidPublic": "BAkOm-IVWfZqsjeR-6vkvD0zFvkW2rmmCpSua1VPOGfXX9XDCL_FB7tTvh9TqHEJTg-4u2xenlcMRzOFKvTru8c",
+ "clientId": "2ec87134-809c-45f1-9443-e01eb0d7597d",
+ "vapidPrivate": "lrdBia7yKMgUAMD8Ug1ysnXLA1CG-sL9uoy8gfZcmDc",
+ "vapidPublic": "BF3EQontGsmz3dXHnziByoPBhBmnnRa0bikSnoLTEnezWamZZhuQmKb7QglXwyFaiZmvhOGZkOTkhPEbtd9O0rI",
  "main": {
-  "apiKey": "MTc2NTIyMDc4NTcxN2IwMmRkYWI0LWM3MzQtNGFlNS05ZTUzLTg2MWJjNmNjY2RiOQ==",
-  "applicationTitle": "Jellyseerr",
+  "apiKey": "MTc3MzI1NzY0MjAwOTcwOTk0OWU5LWVhMmMtNGQ5Yi1hMGYzLTYwZmQwNjJhODVlNQ==",
+  "applicationTitle": "Seerr",
   "applicationUrl": "",
   "cacheImages": false,
-  "defaultPermissions": 1048608,
+  "defaultPermissions": 6291488,
   "defaultQuotas": {
    "movie": {
     "quotaLimit": 0,
@@ -19,15 +19,15 @@
    }
   },
   "hideAvailable": false,
-  "hideBlacklisted": false,
+  "hideBlocklisted": false,
   "localLogin": false,
   "mediaServerLogin": true,
   "newPlexLogin": true,
-  "discoverRegion": "ES",
+  "discoverRegion": "",
   "streamingRegion": "ES",
   "originalLanguage": "",
-  "blacklistedTags": "",
-  "blacklistedTagsLimit": 50,
+  "blocklistedTags": "",
+  "blocklistedTagsLimit": 50,
   "mediaServerType": 2,
   "partialRequestsEnabled": true,
   "enableSpecialEpisodes": false,
@@ -70,9 +70,13 @@
    }
   ],
   "serverId": "1274108a5d0a469fb82ddf85fcda0856",
-  "apiKey": "9b78d2f3d7374be6bf30fd5c98664af9"
+  "apiKey": "0bbe5d5b738e486d906c5804f1346fa9"
  },
  "tautulli": {},
+ "metadataSettings": {
+  "tv": "tvdb",
+  "anime": "tvdb"
+ },
  "radarr": [
   {
    "name": "radarr",
@@ -80,7 +84,6 @@
    "port": 7878,
    "apiKey": "b28ff4dfd5b64fe9855c27a47cbf7aaf",
    "useSsl": false,
-   "baseUrl": "",
    "activeProfileId": 9,
    "activeProfileName": "HD Bluray + WEB",
    "activeDirectory": "/data/media/movies",
@@ -125,8 +128,9 @@
    "activeProfileId": 7,
    "activeProfileName": "Remux-1080p - Anime",
    "activeDirectory": "/data/media/anime",
-   "animeSeriesType": "standard",
-   "activeAnimeDirectory": "",
+   "activeAnimeProfileId": 7,
+   "activeAnimeProfileName": "Remux-1080p - Anime",
+   "activeAnimeDirectory": "/data/media/anime",
    "tags": [],
    "animeTags": [],
    "is4k": false,
@@ -146,6 +150,7 @@
   "agents": {
    "email": {
     "enabled": false,
+    "embedPoster": true,
     "options": {
      "userEmailRequired": false,
      "emailFrom": "",
@@ -155,11 +160,12 @@
      "ignoreTls": false,
      "requireTls": false,
      "allowSelfSigned": false,
-     "senderName": "Jellyseerr"
+     "senderName": "Seerr"
     }
    },
    "discord": {
     "enabled": false,
+    "embedPoster": true,
     "types": 0,
     "options": {
      "webhookUrl": "",
@@ -169,6 +175,7 @@
    },
    "slack": {
     "enabled": false,
+    "embedPoster": true,
     "types": 0,
     "options": {
      "webhookUrl": ""
@@ -176,6 +183,7 @@
    },
    "telegram": {
     "enabled": false,
+    "embedPoster": true,
     "types": 0,
     "options": {
      "botAPI": "",
@@ -186,6 +194,7 @@
    },
    "pushbullet": {
     "enabled": false,
+    "embedPoster": false,
     "types": 0,
     "options": {
      "accessToken": ""
@@ -193,6 +202,7 @@
    },
    "pushover": {
     "enabled": false,
+    "embedPoster": true,
     "types": 0,
     "options": {
      "accessToken": "",
@@ -202,6 +212,7 @@
    },
    "webhook": {
     "enabled": false,
+    "embedPoster": true,
     "types": 0,
     "options": {
      "webhookUrl": "",
@@ -209,11 +220,13 @@
     }
    },
    "webpush": {
-    "enabled": true,
+    "enabled": false,
+    "embedPoster": true,
     "options": {}
    },
    "gotify": {
     "enabled": false,
+    "embedPoster": false,
     "types": 0,
     "options": {
      "url": "",
@@ -223,10 +236,11 @@
    },
    "ntfy": {
     "enabled": true,
-    "types": 3866,
+    "embedPoster": true,
+    "types": 778,
     "options": {
      "url": "http://ntfy",
-     "topic": "jellyseerr"
+     "topic": "seerr"
     }
    }
   }
@@ -268,7 +282,7 @@
   "image-cache-cleanup": {
    "schedule": "0 0 5 * * *"
   },
-  "process-blacklisted-tags": {
+  "process-blocklisted-tags": {
    "schedule": "0 30 1 */7 * *"
   }
  },
@@ -285,6 +299,16 @@
    "password": "",
    "bypassFilter": "",
    "bypassLocalAddresses": true
-  }
- }
+  },
+  "dnsCache": {
+   "enabled": false,
+   "forceMinTtl": 0,
+   "forceMaxTtl": -1
+  },
+  "apiRequestTimeout": 10000
+ },
+ "migrations": [
+  "0007_migrate_arr_tags",
+  "0008_migrate_blacklist_to_blocklist"
+ ]
 }
