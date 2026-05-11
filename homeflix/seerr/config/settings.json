@@ -1,9 +1,10 @@
 {
  "clientId": "2ec87134-809c-45f1-9443-e01eb0d7597d",
+ "sessionSecret": "39c72b2d35990897b669dc1281b4dcb482a143b3cbbe5a6d46007841481f1693",
  "vapidPrivate": "lrdBia7yKMgUAMD8Ug1ysnXLA1CG-sL9uoy8gfZcmDc",
  "vapidPublic": "BF3EQontGsmz3dXHnziByoPBhBmnnRa0bikSnoLTEnezWamZZhuQmKb7QglXwyFaiZmvhOGZkOTkhPEbtd9O0rI",
  "main": {
-  "apiKey": "MTc3MzI1NzY0MjAwOTcwOTk0OWU5LWVhMmMtNGQ5Yi1hMGYzLTYwZmQwNjJhODVlNQ==",
+  "apiKey": "MTc3NDQ2NzM2ODAxNjQzNDk2ZDM0LTBjYWUtNGFhYy04YWNiLTgyZTNiOWJjMWQ5Yg==",
   "applicationTitle": "Seerr",
   "applicationUrl": "",
   "cacheImages": false,
@@ -26,6 +27,8 @@
   "discoverRegion": "",
   "streamingRegion": "ES",
   "originalLanguage": "",
+  "blocklistRegion": "",
+  "blocklistLanguage": "",
   "blocklistedTags": "",
   "blocklistedTagsLimit": 50,
   "mediaServerType": 2,
@@ -240,7 +243,8 @@
     "types": 778,
     "options": {
      "url": "http://ntfy",
-     "topic": "seerr"
+     "topic": "seerr",
+     "priority": 3
     }
    }
   }

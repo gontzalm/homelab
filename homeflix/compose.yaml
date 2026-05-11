@@ -247,7 +247,7 @@ services:
       homepage.description: Request manager
       homepage.widget.type: seerr
       homepage.widget.url: http://seerr:5055
-      homepage.widget.key: ${SEERR_API_KEY}
+      homepage.widget.key: MTc3NDQ2NzM2ODAxNjQzNDk2ZDM0LTBjYWUtNGFhYy04YWNiLTgyZTNiOWJjMWQ5Yg==
 
 volumes:
   media:

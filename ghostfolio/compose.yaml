@@ -12,6 +12,7 @@ services:
     ports:
       - 127.0.0.1:3333:3333
     networks:
+      - default
       - homelab
     depends_on:
       postgres:
@@ -35,13 +36,11 @@ services:
 
   postgres:
     image: postgres:15-alpine
-    container_name: gf-postgres
+    container_name: ghostfolio-postgres
     restart: unless-stopped
     env_file: .env
     volumes:
       - postgres:/var/lib/postgresql/data
-    networks:
-      - homelab
     cap_drop:
       - ALL
     cap_add:
@@ -54,19 +53,17 @@ services:
       - no-new-privileges:true
     healthcheck:
       test:
-        ['CMD-SHELL', 'pg_isready -d "$${POSTGRES_DB}" -U $${POSTGRES_USER}']
+        ["CMD-SHELL", 'pg_isready -d "$${POSTGRES_DB}" -U $${POSTGRES_USER}']
       interval: 10s
       timeout: 5s
       retries: 5
 
   redis:
     image: docker.io/library/redis:alpine
-    container_name: gf-redis
+    container_name: ghostfolio-redis
     restart: unless-stopped
     env_file: .env
-    networks:
-      - homelab
-    user: '999:1000'
+    user: "999:1000"
     cap_drop:
       - ALL
     security_opt:
@@ -74,10 +71,11 @@ services:
     command:
       - /bin/sh
       - -c
-      - redis-server --requirepass "$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}"
+      - redis-server --requirepass "$${REDIS_PASSWORD:?REDIS_PASSWORD variable
+        is not set}"
     healthcheck:
       test:
-        ['CMD-SHELL', 'redis-cli --pass "$${REDIS_PASSWORD}" ping | grep PONG']
+        ["CMD-SHELL", 'redis-cli --pass "$${REDIS_PASSWORD}" ping | grep PONG']
       interval: 10s
       timeout: 5s
       retries: 5
