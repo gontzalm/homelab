@@ -28,7 +28,7 @@ class PlatformSynchronizer(ABC):
 
     @cached_property
     def _existing_ids(self) -> set[str]:
-        activities: list[GhostfolioActivity] = self._ghostfolio.orders(
+        activities: list[GhostfolioActivity] = self._ghostfolio.activities(
             account_id=self._ghostfolio_account_id
         )["activities"]
 
@@ -67,7 +67,7 @@ class PlatformSynchronizer(ABC):
         raise NotImplementedError
 
     def _get_max_account_datetime(self) -> datetime:
-        activities: list[GhostfolioActivity] = self._ghostfolio.orders(
+        activities: list[GhostfolioActivity] = self._ghostfolio.activities(
             account_id=self._ghostfolio_account_id
         )["activities"]
 
