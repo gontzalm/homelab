@@ -44,6 +44,7 @@ class CryptoSynchronizer(PlatformSynchronizer, CryptoConfig, ABC, Generic[T]):
         return httpx.Client(
             base_url=self.provider_url.removesuffix("/") + self.PROVIDER_API_PATH,
             proxy=self.proxy_url,
+            timeout=httpx.Timeout(30.0),
         )
 
     @cached_property
