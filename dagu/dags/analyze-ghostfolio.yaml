@@ -4,8 +4,6 @@ schedule: "0 20 * * sun"
 container:
   exec: dagu-python-worker
   working_dir: /scripts/${DAG_NAME}
-  env:
-    - UV_PROJECT_ENVIRONMENT: /.venvs/analyze-ghostfolio
 
 steps:
   - name: analyze-portfolio

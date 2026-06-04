@@ -1,6 +1,6 @@
 services:
   dagu:
-    image: ghcr.io/dagu-org/dagu
+    image: ghcr.io/dagucloud/dagu
     container_name: dagu
     restart: unless-stopped
     entrypoint: []
@@ -37,13 +37,11 @@ services:
       UV_CACHE_DIR: /.venvs/.uv-cache
     volumes:
       - ./scripts:/scripts
-      - worker-venvs:/.venvs
     networks:
       - homelab
 
 volumes:
   dagu-data:
-  worker-venvs:
 
 networks:
   homelab:

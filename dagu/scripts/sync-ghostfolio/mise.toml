@@ -1,2 +1,2 @@
 [env]
-UV_PROJECT_ENVIRONMENT = "/home/gontz/homelab-venvs/sync-ghostfolio"
+UV_PROJECT_ENVIRONMENT = "/home/gontz/.cache/uv/venvs/sync-ghostfolio"

@@ -4,8 +4,6 @@ schedule: "0 2 * * *"
 container:
   exec: dagu-python-worker
   working_dir: /scripts/${DAG_NAME}
-  env:
-    UV_PROJECT_ENVIRONMENT: /.venvs/sync-ghostfolio
 
 steps:
   - name: sync-gontz
