@@ -2,6 +2,7 @@ import logging
 import sys
 import tomllib
 from pathlib import Path
+from typing import cast
 
 from dotenv import dotenv_values
 from ghostfolio import Ghostfolio
@@ -19,7 +20,7 @@ from .synchronizers.myinvestor import MyInvestorSynchronizer
 logging.basicConfig(level=logging.INFO)
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
-env: dict[str, str] = dotenv_values()  # ty:ignore[invalid-assignment]
+env = {k: v for k, v in dotenv_values().items() if v is not None}
 
 
 def gather_synchronizers(
@@ -119,7 +120,7 @@ def gather_synchronizers(
 
 def main() -> None:
     user = sys.argv[1]
-    config: Config = tomllib.loads(Path("config.toml").read_text())  # ty:ignore[invalid-assignment]
+    config = cast(Config, tomllib.loads(Path("config.toml").read_text()))
 
     ghostfolio = Ghostfolio(
         token=env[f"{user.upper()}_GHOSTFOLIO_TOKEN"],
