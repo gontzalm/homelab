@@ -24,6 +24,10 @@ class Freedom24Config(PlatformConfig):
     pass
 
 
+class MyInvestorConfig(PlatformConfig):
+    pass
+
+
 class CryptoConfig(PlatformConfig):
     coins: list[str]
 
@@ -32,6 +36,7 @@ class UserPlatforms(TypedDict):
     indexa_capital: NotRequired[IndexaCapitalConfig]
     indexa_capital_pension: NotRequired[IndexaCapitalConfig]
     freedom24: NotRequired[Freedom24Config]
+    myinvestor: NotRequired[MyInvestorConfig]
     crypto: NotRequired[CryptoConfig]
 
 

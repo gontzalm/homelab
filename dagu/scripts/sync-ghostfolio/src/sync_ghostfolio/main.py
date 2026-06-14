@@ -14,6 +14,7 @@ from sync_ghostfolio.synchronizers.crypto import (
 from .models import Config, Synchronizer
 from .synchronizers.freedom24 import Freedom24Synchronizer
 from .synchronizers.indexa import IndexaCapitalSynchronizer
+from .synchronizers.myinvestor import MyInvestorSynchronizer
 
 logging.basicConfig(level=logging.INFO)
 logging.getLogger("httpx").setLevel(logging.WARNING)
@@ -62,6 +63,18 @@ def gather_synchronizers(
                         platform_cfg["ghostfolio_account_id"],
                         env[f"{user.upper()}_FREEDOM24_PUBLIC_KEY"],
                         env[f"{user.upper()}_FREEDOM24_PRIVATE_KEY"],
+                        ntfy_topic=config["ghostfolio"].get("ntfy_topic"),
+                    )
+                )
+
+            case "myinvestor":
+                platform_cfg = platforms["myinvestor"]
+                synchronizers.append(
+                    MyInvestorSynchronizer(
+                        ghostfolio,
+                        platform_cfg["ghostfolio_account_id"],
+                        env[f"{user.upper()}_MYINVESTOR_CUSTOMER_ID"],
+                        env[f"{user.upper()}_MYINVESTOR_PASSWORD"],
                         ntfy_topic=config["ghostfolio"].get("ntfy_topic"),
                     )
                 )
