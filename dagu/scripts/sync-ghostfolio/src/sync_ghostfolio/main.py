@@ -74,8 +74,7 @@ def gather_synchronizers(
                     MyInvestorSynchronizer(
                         ghostfolio,
                         platform_cfg["ghostfolio_account_id"],
-                        env[f"{user.upper()}_MYINVESTOR_CUSTOMER_ID"],
-                        env[f"{user.upper()}_MYINVESTOR_PASSWORD"],
+                        env[f"{user.upper()}_MYINVESTOR_ACCESS_TOKEN"],
                         ntfy_topic=config["ghostfolio"].get("ntfy_topic"),
                     )
                 )

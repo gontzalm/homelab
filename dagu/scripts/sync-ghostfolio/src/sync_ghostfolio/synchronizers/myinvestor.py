@@ -24,26 +24,17 @@ class MyInvestorSynchronizer(PlatformSynchronizer):
         self,
         ghostfolio_client: Ghostfolio,
         ghostfolio_account_id: str,
-        customer_id: str,
-        password: str,
+        access_token: str,
         *,
         ntfy_topic: str | None = None,
     ) -> None:
         super().__init__(
             ghostfolio_client, ghostfolio_account_id, ntfy_topic=ntfy_topic
         )
-        self._http = httpx.Client(base_url=self.BASE_URL)
-        self._login(customer_id, password)
-
-    def _login(self, customer_id: str, password: str) -> None:
-        logger.info("Authenticating with MyInvestor")
-        r = self._http.post(
-            "/login/api/v2/auth/token",
-            json={"customerId": customer_id, "password": password},
+        self._http = httpx.Client(
+            base_url=self.BASE_URL,
+            headers={"Authorization": f"Bearer {access_token}"},
         )
-        r.raise_for_status()
-        token = r.json()["payload"]["data"]["accessToken"]
-        self._http.headers["Authorization"] = f"Bearer {token}"
 
     @cached_property
     def _account_id(self) -> str:
